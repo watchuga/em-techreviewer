@@ -245,231 +245,11 @@ const quizData = [
             "C. Input + Output = Model",
             "D. Rules + Predictions = Hardware"
         ],
-        answer: 1,
-        explanation: "Traditional software engineering takes input data, passes it through programmer-written explicit rules, and produces an output."
-    },
-    {
-        q: "11. Why do developers prefer Machine Learning over traditional conditional code when building spam filtering tools?",
-        options: [
-            "A. Email formats remain strictly identical and predictable over long periods.",
-            "B. Spam messages continuously evolve, making manually engineered IF-THEN rules hard to maintain.",
-            "C. Machine learning programs avoid using underlying mathematical operations.",
-            "D. Traditional software environments cannot read plain text message bodies."
-        ],
-        answer: 1,
-        explanation: "Spam constantly evolves to bypass static filters; machine learning models adapt automatically to new spam patterns based on incoming data."
-    },
-    {
-        q: "12. An AI prediction engine attempts to forecast purchasing habits, but its training set contains inconsistent, inaccurate records. What is the expected outcome?",
-        options: [
-            "A. The model will auto-correct dirty data errors during training.",
-            "B. Predictive accuracy will degrade because of poor training data quality.",
-            "C. The system will bypass training data and rely on system hardware logic.",
-            "D. The algorithm will automatically rewrite its underlying feature parameters."
-        ],
-        answer: 1,
-        explanation: "The principle of 'Garbage In, Garbage Out' dictates that low-quality, inaccurate training inputs yield unreliable prediction models."
-    },
-    {
-        q: "13. What is the primary difference between declarative and imperative programming paradigms?",
-        options: [
-            "A. Declarative programming defines *what* outcome is desired, while imperative programming specifies step-by-step *how* to achieve it.",
-            "B. Imperative code avoids using structured instruction logic entirely.",
-            "C. Declarative programming relies exclusively on artificial neural networks.",
-            "D. Imperative code can only be executed on specialized AI processor hardware."
-        ],
-        answer: 0,
-        explanation: "Imperative code details the exact sequence of steps to reach a goal; declarative code describes the desired target state and lets the underlying system fulfill it."
-    },
-    {
-        q: "14. In traditional software development, who explicitly defines the logical steps and algorithms followed by the system?",
-        options: [
-            "A. The compiled runtime binary",
-            "B. The human software engineer",
-            "C. The end-user during interaction",
-            "D. The host operating system kernel"
-        ],
-        answer: 1,
-        explanation: "In traditional software design, human programmers manually engineer the logic, math, and conditional steps."
-    },
-    {
-        q: "15. Which statement accurately defines Deep Learning?",
-        options: [
-            "A. A branch of machine learning that utilizes artificial neural networks with multiple hidden layers.",
-            "B. A liquid cooling technique designed for high-density server racks.",
-            "C. A legacy rule-based expert coding structure.",
-            "D. A manual data entry and storage indexing process."
-        ],
-        answer: 0,
-        explanation: "Deep Learning is a subset of machine learning characterized by multi-layer artificial neural networks capable of learning complex representations."
-    },
-    {
-        q: "16. A security system inspects video frames and categorizes identified elements into 'vehicle', 'pedestrian', or 'animal'. What computer vision task is being performed?",
-        options: [
-            "A. Character Optical Parsing",
-            "B. Image Classification / Object Categorization",
-            "C. Semantic Text Synthesis",
-            "D. Lexical Sentiment Analysis"
-        ],
-        answer: 1,
-        explanation: "Image classification evaluates visual feature distributions to categorize regions or images into pre-assigned target classes."
-    },
-    {
-        q: "17. What primary challenge commonly arises during routine computer hardware maintenance and upgrades?",
-        options: [
-            "A. Physical hardware components never undergo wear over extended operation.",
-            "B. Incompatibilities between physical bus standards, form factors, or component protocols.",
-            "C. Performing maintenance permanently damages system microprocessors.",
-            "D. Dust removal automatically shortens device operational life."
-        ],
-        answer: 1,
-        explanation: "Hardware maintenance and upgrades frequently encounter component compatibility bottlenecks, such as mismatched socket types, bus speeds, or BIOS support."
-    },
-    {
-        q: "18. A fraud detection system trains on millions of historic credit card charges, each explicitly flagged as 'legitimate' or 'fraudulent'. What learning methodology is being used?",
-        options: [
-            "A. Unsupervised Feature Association",
-            "B. Supervised Learning",
-            "C. Dynamic Reinforcement Optimization",
-            "D. Declarative Symbolic Logic"
-        ],
-        answer: 1,
-        explanation: "Supervised learning trains models on labeled input-output pairs so the system can learn the mathematical mapping between inputs and targets."
-    },
-    {
-        q: "19. How does predictive maintenance optimize system uptime compared to reactive maintenance?",
-        options: [
-            "A. It defers all repairs until hardware suffers total operational breakdown.",
-            "B. It monitors real-time telemetry indicators to service components right before failure occurs.",
-            "C. It replaces every internal component on a rigid daily schedule.",
-            "D. It addresses system performance exclusively through operating system updates."
-        ],
-        answer: 1,
-        explanation: "Predictive maintenance uses real-time telemetry (vibration, heat, error rates) to catch component degradation before functional failure happens."
-    },
-    {
-        q: "20. What was the primary root cause of historical periods known as 'AI Winters'?",
-        options: [
-            "A. Exaggerated promises and overhyped capabilities outstripping actual technology, leading to funding cuts.",
-            "B. Permanent loss of interest in computer science across global universities.",
-            "C. Government mandates outlawing all algorithmic research.",
-            "D. Complete global depletion of electronic processing hardware."
-        ],
-        answer: 0,
-        explanation: "AI Winters were caused when overinflated expectations failed to deliver operational commercial tools, leading to withdrawn investments and stagnant research."
-    },
-    {
-        q: "21. An autonomous agent learns to navigate a maze by receiving numerical points for reaching checkpoints and point deductions for hitting walls. What learning model is this?",
-        options: [
-            "A. Reinforcement Learning",
-            "B. Supervised Classification",
-            "C. Deterministic Symbolic Logic",
-            "D. Unsupervised Dimensionality Reduction"
-        ],
-        answer: 0,
-        explanation: "Reinforcement learning uses trial-and-error interactions driven by scalar rewards and penalties to learn optimal decision policies."
-    },
-    {
-        q: "22. Which historic benchmark was designed to test whether a computer's conversational output could be distinguished from that of a human?",
-        options: [
-            "A. Dartmouth Matrix Test",
-            "B. The Turing Test",
-            "C. McCarthy Logic Protocol",
-            "D. Symbolic Execution Benchmark"
-        ],
-        answer: 1,
-        explanation: "Proposed by Alan Turing in 1950, the Turing Test evaluates whether a machine can converse convincingly enough to pass for a human."
-    },
-    {
-        q: "23. What is a primary direct benefit of carrying out routine preventative hardware maintenance?",
-        options: [
-            "A. Increasing long-term system repair expenses.",
-            "B. Extending the operational lifespan and reliability of physical hardware.",
-            "C. Reducing overall hardware throughput speed.",
-            "D. Requiring daily complete re-installations of the operating system."
-        ],
-        answer: 1,
-        explanation: "Preventative care (cleaning, inspection, environment controls) lowers component stress, preventing premature failure and extending device operational life."
-    },
-    {
-        q: "24. An e-commerce platform processes raw user purchase vectors to group shoppers into distinct audience categories without human-provided labels. Which approach is this?",
-        options: [
-            "A. Supervised Target Regression",
-            "B. Unsupervised Learning / Clustering",
-            "C. Imperative Execution Logic",
-            "D. Reactive Maintenance Auditing"
-        ],
-        answer: 1,
-        explanation: "Unsupervised learning extracts hidden patterns and structural groupings (like customer clusters) from data that lacks predefined target labels."
-    },
-    {
-        q: "25. When a programmer explicitly details every control flow path, memory allocation step, and state mutation required to run a task, what programming style are they using?",
-        options: [
-            "A. Declarative Target Definition",
-            "B. Imperative Programming",
-            "C. Probabilistic Model Inference",
-            "D. Unsupervised Feature Mapping"
-        ],
-        answer: 1,
-        explanation: "Imperative programming relies on explicit sequential commands telling the machine step-by-step *how* to execute a process."
-    },
-    {
-        q: "26. A voice-activated digital assistant processes a spoken query, interprets the intent, and synthesizes a spoken response. What branch of AI is primarily driving this interaction?",
-        options: [
-            "A. Natural Language Processing (NLP)",
-            "B. Computer Vision exclusively",
-            "C. Reactive Hardware Telemetry",
-            "D. Kinematic Physical Robotics"
-        ],
-        answer: 0,
-        explanation: "NLP handles speech-to-text, intent parsing, semantic understanding, and text-to-speech voice interaction."
-    },
-    {
-        q: "27. Which strategy best characterizes preventative computer hardware maintenance?",
-        options: [
-            "A. Replacing motherboard components only after complete component burnout.",
-            "B. Performing scheduled dust removal, inspections, and thermal checks to lower failure risks.",
-            "C. Rewriting application software code to increase network connection speeds.",
-            "D. Searching online repositories for new third-party utility applications."
-        ],
-        answer: 1,
-        explanation: "Preventative maintenance involves routine, proactive physical care to stop hardware problems before they start."
-    },
-    {
-        q: "28. A system consistently produces the exact same numerical output every time it processes the input equation `42 * 10`. What property does this illustrate?",
-        options: [
-            "A. Adaptive Machine Learning",
-            "B. Deterministic Behavior",
-            "C. Dynamic Heuristic Adjustment",
-            "D. Probabilistic Modeling"
-        ],
-        answer: 1,
+ 
         explanation: "Deterministic programs follow fixed computational pathways, yielding identical outputs for identical inputs every time."
     },
     {
-        q: "29. A medical imaging tool highlights suspicious tissue regions on X-rays to assist radiologists in making faster, more accurate diagnoses. What is the proper role of this system?",
-        options: [
-            "A. The system completely replaces human clinical staff.",
-            "B. The system serves as an analytical augmentation tool to support expert human judgment.",
-            "C. The system guarantees perfect 100% accuracy on every image.",
-            "D. The system makes medical training obsolete."
-        ],
-        answer: 1,
-        explanation: "Clinical decision support systems augment human specialists by catching subtle patterns, while final decision authority remains with medical professionals."
-    },
-    {
-        q: "30. Why is an AI computer vision system better suited for facial recognition security gates than a traditional conditional program?",
-        options: [
-            "A. AI can account for variations in lighting, facial angles, and aging that are impossible to hardcode.",
-            "B. Traditional software is fundamentally incapable of storing digital names.",
-            "C. AI infrastructure costs nothing to build and maintain.",
-            "D. Traditional programming cannot load or store visual image files."
-        ],
-        answer: 0,
-        explanation: "Visual data contains immense variability; machine learning models adapt to lighting, expressions, and angles better than rigid, hardcoded conditional rules."
-    },
-    {
-        q: "31. Which scenario is an example of corrective hardware maintenance?",
+        q: "11. Which scenario is an example of corrective hardware maintenance?",
         options: [
             "A. Blowing compressed air through a heatsink on a planned monthly cycle.",
             "B. Swapping out a failed power supply unit after the system refuses to turn on.",
@@ -480,7 +260,7 @@ const quizData = [
         explanation: "Corrective maintenance is reactive work done to fix or replace hardware *after* a malfunction or breakdown has occurred."
     },
     {
-        q: "32. A automated turnstile identifies students walking past a camera lens and marks them present on the class roster. Which technology powers this system?",
+        q: "12. A automated turnstile identifies students walking past a camera lens and marks them present on the class roster. Which technology powers this system?",
         options: [
             "A. Collaborative Recommendation Filtering",
             "B. Facial Recognition / Computer Vision",
@@ -491,7 +271,7 @@ const quizData = [
         explanation: "Facial recognition uses vision algorithms to analyze visual features from video feeds and match them against known facial biometric vectors."
     },
     {
-        q: "33. Which operational task is most appropriately handled using traditional deterministic software rather than Machine Learning?",
+        q: "13. Which operational task is most appropriately handled using traditional deterministic software rather than Machine Learning?",
         options: [
             "A. Calculating employee overtime pay based on codified labor law parameters.",
             "B. Identifying suspicious credit card transactions across global payment feeds.",
@@ -502,7 +282,7 @@ const quizData = [
         explanation: "Payroll calculation is completely deterministic and follows strict, static math formulas, making traditional conditional code the right tool."
     },
     {
-        q: "34. An enterprise implements AI tools to automate routine data indexing so staff can shift focus toward strategic analysis. What workforce trend does this demonstrate?",
+        q: "14. An enterprise implements AI tools to automate routine data indexing so staff can shift focus toward strategic analysis. What workforce trend does this demonstrate?",
         options: [
             "A. AI eliminates all human workforce requirements across every department.",
             "B. AI automates repetitive tasks while shifting human roles toward higher-level decision making.",
