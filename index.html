@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI & Hardware Maintenance Reviewer</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #2563eb;
+            --correct-color: #16a34a;
+            --incorrect-color: #dc2626;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            color: #1e293b;
+        }
+
+        .score-board {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .question-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-color);
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--correct-color);
+            color: #14532d;
+            font-weight: bold;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: var(--incorrect-color);
+            color: #7f1d1d;
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .feedback-box.show {
+            display: block;
+        }
+
+        .feedback-box.correct {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .feedback-box.incorrect {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>AI & Hardware Maintenance Quiz Reviewer</h1>
+        <div class="score-board">Score: <span id="score">0</span> / <span id="total">80</span></div>
+    </header>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+const quizData = [
+    {
+        q: "1. Which technique enables a computer to extract and convert printed text within a photo into an editable text document?",
+        options: ["A. Natural Language Generation", "B. Optical Character Recognition", "C. Sentiment Analysis", "D. Object Bounding"],
+        answer: 2,
+        explanation: "WELCOME SA REVIEWER NI SIR J"
+    },
+    {
+        q: "2. A technician sets up automated software that checks server temperatures and alerts admins when hardware heat rises, avoiding potential server meltdowns before hardware fails. What approach is being used?",
+        options: ["A. Corrective Repair", "B. Emergency Overhaul", "C. Predictive Maintenance", "D. Static Inspection"],
+        answer: 2,
+        explanation: "Predictive Maintenance utilizes real-time monitoring and sensor data to evaluate equipment condition and predict failure before it happens."
+    },
+    {
+        q: "3. What major outcome resulted from the 1956 Dartmouth Conference?",
+        options: ["A. It produced the first consumer computer processor.", "B. It formally established Artificial Intelligence as an official field of study.", "C. It resulted in the first self-driving vehicle.", "D. It created the initial foundations of internet protocols."],
+        answer: 1,
+        explanation: "The 1956 Dartmouth Summer Research Project on Artificial Intelligence is widely considered the founding event of AI as a field."
+    },
+    {
+        q: "4. Which component functions as an input device for a computer system?",
+        options: ["A. Peripheral Monitor", "B. Laser Printer", "C. Mechanical Keyboard", "D. Audio Speaker"],
+        answer: 2,
+        explanation: "A keyboard is an input device used to enter data and instructions into a computer system."
+    },
+    {
+        q: "5. A company wants to analyze customer reviews to automatically group them as expressing positive, negative, or neutral feelings. Which strategy is most effective?",
+        options: ["A. Writing fixed IF-THEN rules for every English word", "B. Utilizing Machine Learning models trained on labeled customer reviews", "C. Using a basic mathematical program to tally letter lengths", "D. Using declarative hardware scripts"],
+        answer: 1,
+        explanation: "Machine Learning models excel at Natural Language Processing tasks like sentiment analysis by recognizing complex language patterns."
+    },
+    {
+        q: "6. Why is traditional, rule-based programming effective for structured operations like calculating payroll?",
+        options: ["A. It learns automatically from employee input.", "B. Exact conditions and clear computational rules can be explicitly written into code.", "C. It uses neural networks to infer salary rates.", "D. It adapts whenever state laws change without programmer intervention."],
+        answer: 1,
+        explanation: "Deterministic problems with strict, static rules (like tax formulas) are best handled by explicit rule-based programming."
+    },
+    {
+        q: "7. A streaming platform tracks a user's habits (e.g., repeatedly watching historical documentaries) and suggests related titles. What form of data is driving this AI system?",
+        options: ["A. Randomly generated database indexes", "B. Historical user interaction and activity logs", "C. Hardcoded, non-updating preference lists", "D. Hard drive storage capacity limits"],
+        answer: 1,
+        explanation: "Recommendation engines analyze implicit user data, such as viewing history and activity patterns, to generate predictions."
+    },
+    {
+        q: "8. Which statement accurately captures the core objective of Good Old-Fashioned AI (GOFAI)?",
+        options: ["A. Systems process data solely through neural networks.", "B. Systems rely on formal logic and explicitly defined rules.", "C. Systems eliminate rule structures in favor of trial-and-error.", "D. Systems process visual inputs through physical sensors."],
+        answer: 1,
+        explanation: "GOFAI (Symbolic AI) relies on explicitly represented rules, formal logic, and expert systems rather than statistical learning."
+    },
+    {
+        q: "9. An automated translation application lets a user speak in one language and instantly outputs the translated phrase in another. Which primary capability powers this tool?",
+        options: ["A. Computer Vision", "B. Language Translation", "C. Autonomous Navigation", "D. Fraud Detection"],
+        answer: 1,
+        explanation: "Machine Translation, a branch of NLP, translates spoken or written text from one natural language to another."
+    },
+    {
+        q: "10. Which formula accurately represents the fundamental operation of traditional software development?",
+        options: ["A. Data + Prediction = Input", "B. Input + Rules = Output", "C. Input + Output = Model", "D. Data + Learning = Hardware"],
+        answer: 1,
+        explanation: "Traditional software engineering takes input data, processes it according to pre-written rules, and generates an output."
+    },
+    {
+        q: "11. A developer chooses Machine Learning over traditional programming to build an email spam filter. Why is this choice appropriate?",
+        options: ["A. Email rules are completely static and never change.", "B. Spam emails contain evolving patterns and variations that are difficult to write manual rules for.", "C. Machine Learning relies on simpler mathematical code than traditional programs.", "D. Traditional software cannot read text files."],
+        answer: 1,
+        explanation: "Spam evolves constantly; Machine Learning automatically learns and adapts to shifting spam patterns better than explicit rules."
+    },
+    {
+        q: "12. An AI model attempts to predict customer purchasing behavior, but its training set contains inaccurate, low-quality data. What is the expected outcome?",
+        options: ["A. The AI will fix the inaccuracies automatically.", "B. The system's predictive accuracy will decrease due to poor data quality.", "C. The system will operate normally without relying on input data.", "D. The hardware will automatically upgrade itself."],
+        answer: 1,
+        explanation: "'Garbage in, garbage out' applies to AI; low-quality or inaccurate training data leads to unreliable outputs."
+    },
+    {
+        q: "13. What primary focus separates declarative programming from imperative programming?",
+        options: ["A. Declarative programming defines the target outcome, whereas imperative programming details step-by-step instructions.", "B. Imperative programming avoids using computer code.", "C. Declarative programming relies strictly on machine learning algorithms.", "D. Imperative programming only runs on specialized AI hardware."],
+        answer: 0,
+        explanation: "Imperative code defines *how* to achieve a result via explicit steps; declarative code defines *what* the desired outcome is."
+    },
+    {
+        q: "14. In traditional programming, who defines the logical steps and rules that the computer follows?",
+        options: ["A. The software application itself", "B. The human programmer", "C. The end-user during runtime", "D. The central operating system automatically"],
+        answer: 1,
+        explanation: "In traditional software design, human programmers manually write explicit rules and algorithms."
+    },
+    {
+        q: "15. Which of the following describes Deep Learning?",
+        options: ["A. A subset of machine learning utilizing multi-layered artificial neural networks", "B. A hardware cooling method for server racks", "C. A traditional rule-based coding language", "D. An manual data storage technique"],
+        answer: 0,
+        explanation: "Deep Learning is a branch of machine learning that relies on deep neural networks with multiple layers."
+    },
+    {
+        q: "16. A security system processes an incoming camera feed and determines whether an object in the field of view is a vehicle, a person, or an animal. What Computer Vision task is being performed?",
+        options: ["A. Optical Character Recognition", "B. Image Classification", "C. Language Translation", "D. Sentiment Analysis"],
+        answer: 1,
+        explanation: "Image classification categorizes an image or region into pre-defined classes based on visual characteristics."
+    },
+    {
+        q: "17. What primary challenge occurs in hardware maintenance?",
+        options: ["A. Hardware performance remains unchanged over time.", "B. Hardware compatibility issues can arise between different components or devices.", "C. Maintenance always leads to immediate system failure.", "D. Equipment lifespan is automatically shortened by cleaning."],
+        answer: 1,
+        explanation: "Inter-device and component compatibility issues are common operational challenges during hardware maintenance and upgrades."
+    },
+    {
+        q: "18. A bank feeds historical records labeled 'fraudulent' or 'legitimate' into a model to help it flag future suspicious activity. What learning method is this?",
+        options: ["A. Unsupervised Learning", "B. Supervised Learning", "C. Reinforcement Learning", "D. Declarative Logic"],
+        answer: 1,
+        explanation: "Supervised Learning involves training algorithms using labeled datasets containing inputs paired with target outputs."
+    },
+    {
+        q: "19. How does a predictive maintenance strategy handle hardware reliability?",
+        options: ["A. It waits for components to break before attempting repairs.", "B. It uses real-time monitoring tools to identify potential failure signals before breakdowns occur.", "C. It replaces all hardware on a daily schedule regardless of condition.", "D. It focuses exclusively on software driver updates."],
+        answer: 1,
+        explanation: "Predictive maintenance measures indicators (vibration, heat, log errors) to detect degradation prior to functional failure."
+    },
+    {
+        q: "20. Historical periods known as 'AI Winters' were primarily caused by what phenomenon?",
+        options: ["A. Overpromising and unrealistic expectations outpacing the capabilities of available technology.", "B. Permanent loss of interest in computer science globally.", "C. Government bans on all software development.", "D. A complete lack of computer hardware."],
+        answer: 0,
+        explanation: "AI Winters occurred when hyping AI abilities failed to deliver real-world performance, causing funding cuts and disinterest."
+    },
+    {
+        q: "21. A robotic arm learns to stack boxes by earning positive feedback points for successful stacks and losing points when items fall. Which machine learning paradigm is demonstrated?",
+        options: ["A. Reinforcement Learning", "B. Supervised Learning", "C. Symbolic Logic", "D. Unsupervised Learning"],
+        answer: 0,
+        explanation: "Reinforcement Learning trains an agent to optimize behaviors through an ecosystem of actions, rewards, and penalties."
+    },
+    {
+        q: "22. Which AI test was proposed to evaluate whether a computer's text-based responses could be indistinguishable from a human's?",
+        options: ["A. Dartmouth Test", "B. Turing Test", "C. McCarthy Evaluation", "D. Symbolic Ratio Test"],
+        answer: 1,
+        explanation: "Alan Turing proposed the Turing Test in 1950 to evaluate whether a computer can emulate human conversational behaviors."
+    },
+    {
+        q: "23. What is a key benefit of conducting regular hardware maintenance?",
+        options: ["A. Increased overall system repair costs", "B. Extended hardware operational lifespan", "C. Decreased system efficiency", "D. Mandatory daily software installations"],
+        answer: 1,
+        explanation: "Periodic preventive care reduces component degradation, significantly extending hardware operating life."
+    },
+    {
+        q: "24. An e-commerce system analyzes customer shopping carts and automatically groups shoppers into distinct segments without relying on pre-existing category labels. Which model is being used?",
+        options: ["A. Supervised Learning", "B. Unsupervised Learning", "C. Imperative Programming", "D. Corrective Maintenance"],
+        answer: 1,
+        explanation: "Unsupervised learning extracts structural patterns and groupings (clustering) from unlabeled datasets."
+    },
+    {
+        q: "25. A programmer instructs a system by specifying every exact command and procedure needed to achieve a task. Which approach is being used?",
+        options: ["A. Declarative Programming", "B. Imperative Programming", "C. Probabilistic Programming", "D. Unsupervised Learning"],
+        answer: 1,
+        explanation: "Imperative programming uses explicit statement sequences to explicitly tell the execution environment *how* to fulfill a task."
+    },
+    {
+        q: "26. An AI assistant listens to a user's spoken command, converts the audio into processed data, and crafts an appropriate vocal answer. Which field of AI is central to this action?",
+        options: ["A. Natural Language Processing", "B. Computer Vision only", "C. Hardware Maintenance", "D. Physical Robotics"],
+        answer: 0,
+        explanation: "Voice assistants rely on NLP and speech processing technologies to parse spoken inputs and craft language responses."
+    },
+    {
+        q: "27. Which strategy best describes hardware preventive maintenance?",
+        options: ["A. Replacing parts only after complete hardware failure", "B. Carrying out scheduled cleaning, inspections, and adjustments to prevent failure", "C. Modifying software code to speed up network traffic", "D. Browsing the web to find new software tools"],
+        answer: 1,
+        explanation: "Preventive maintenance consists of scheduled inspections and cleaning routines aimed at reducing failure probabilities."
+    },
+    {
+        q: "28. What characteristic is demonstrated when a standard calculator returns the exact same result every time 15 + 20 is entered?",
+        options: ["A. System Adaptation", "B. Predictability", "C. Machine Learning", "D. Probabilistic Logic"],
+        answer: 1,
+        explanation: "Deterministic programs produce consistent, predictable outputs given identical static inputs."
+    },
+    {
+        q: "29. A healthcare application evaluates medical images to point out complex structural patterns that might indicate illness, helping doctors with diagnoses. What is the most accurate view of this setup?",
+        options: ["A. The AI completely replaces human medical staff.", "B. The AI acts as an analytical tool to support health professionals.", "C. The AI guarantees 100% diagnostic accuracy in all cases.", "D. The AI makes medical training unnecessary."],
+        answer: 1,
+        explanation: "Clinical decision-support AI aids medical experts rather than replacing clinical diagnostic responsibility entirely."
+    },
+    {
+        q: "30. Why is an AI facial recognition system better suited for school security than a basic rule-based program?",
+        options: ["A. AI can analyze complex facial features despite variations in lighting and angles.", "B. Rule-based software cannot store digital student names.", "C. AI systems cost nothing to implement.", "D. Rule-based software cannot process visual images."],
+        answer: 0,
+        explanation: "Machine learning models learn non-linear spatial representations, accommodating changes in lighting, angles, and facial expressions."
+    },
+    {
+        q: "31. Which of the following is an example of hardware corrective maintenance?",
+        options: ["A. Blowing dust out of a heat sink on a monthly schedule", "B. Swapping out a failed hard drive after it stops working", "C. Updating system drivers regularly", "D. Checking network cable seating during routine inspections"],
+        answer: 1,
+        explanation: "Corrective maintenance involves reactive repairs or component replacement after a physical fault occurs."
+    },
+    {
+        q: "32. A school automates attendance by installing cameras that identify enrolled students as they walk through the entrance. Which technology is required?",
+        options: ["A. Recommendation Algorithms", "B. Facial Recognition", "C. Machine Translation", "D. Natural Language Generation"],
+        answer: 1,
+        explanation: "Facial recognition uses computer vision algorithms to identify specific individuals based on unique biometric features."
+    },
+    {
+        q: "33. Which task is best handled using traditional software development rather than Machine Learning?",
+        options: ["A. Calculating net pay and tax withholdings using fixed statutory rules", "B. Identifying unusual transaction patterns across millions of credit cards", "C. Recognizing handwritten notes on digitized forms", "D. Predicting consumer buying habits for next season"],
+        answer: 0,
+        explanation: "Payroll calculation is completely deterministic and strictly follows codified legal guidelines, making it ideal for traditional code."
+    },
+    {
+        q: "34. An organization wants to use AI to handle routine data entry while transitioning employees toward strategic analysis and decision-making. What does this reflect about workplace AI?",
+        options: ["A. AI completely eliminates the need for human personnel across all industries.", "B. AI can automate routine tasks while shifting human roles toward complex tasks.", "C. AI has zero impact on workforce roles.", "D. AI reduces overall workplace productivity."],
+        answer: 1,
+        explanation: "Automation frequently optimizes task efficiency while shifting human labor toward higher-level analysis and critical thinking."
+    },
+    {
+        q: "35. An application estimates event outcomes under conditions of uncertainty and assigns likelihood scores to different possibilities. Which programming style is best suited for this task?",
+        options: ["A. Probabilistic Programming", "B. Deterministic Imperative Logic", "C. Static Rule-Based Development", "D. Hardware Configuration"],
+        answer: 0,
+        explanation: "Probabilistic programming enables models to reason under conditions of uncertainty and output dynamic probability distributions."
+    },
+    {
+        q: "36. What best defines Artificial Intelligence?",
+        options: ["A. Software designed strictly for basic numerical computations", "B. Technology that enables machines to perform tasks requiring human-like intelligence", "C. A system that stores data without processing capabilities", "D. Traditional software running fixed rules"],
+        answer: 1,
+        explanation: "AI refers broadly to computational systems capable of performing tasks that typically require human cognitive abilities."
+    },
+    {
+        q: "37. Why is modern AI significantly more capable today compared to earlier decades?",
+        options: ["A. AI development now relies on advances across multiple domains, including compute power, massive datasets, and better algorithms.", "B. AI no longer requires input data to make predictions.", "C. Modern systems stopped using mathematical models.", "D. Early AI research was completely discarded."],
+        answer: 0,
+        explanation: "Modern AI advancements are driven by the confluence of scalable cloud compute infrastructure, massive training datasets, and novel algorithmic architectures."
+    },
+    {
+        q: "38. Why is it impractical for a programmer to manually write explicit logic rules for recognizing human faces?",
+        options: ["A. Facial features contain too many variations and visual patterns to capture in static code rules.", "B. Computer hardware cannot store visual data.", "C. Facial recognition requires no mathematical processing.", "D. Traditional code can only process text inputs."],
+        answer: 0,
+        explanation: "The sheer visual variability (lighting, pose, features, expressions) makes manual IF-THEN rule construction impossible for face identification."
+    },
+    {
+        q: "39. Which facility routinely monitors system performance to prevent server downtime?",
+        options: ["A. An open office pantry", "B. A data center", "C. A community library", "D. A physical sports venue"],
+        answer: 1,
+        explanation: "Data centers implement continuous performance and environmental monitoring to maximize server uptime."
+    },
+    {
+        q: "40. Which AI field deals with processing, analyzing, and extracting features from visual inputs like images and video feeds?",
+        options: ["A. Natural Language Processing", "B. Computer Vision", "C. Probabilistic Logic", "D. Rule-Based Processing"],
+        answer: 1,
+        explanation: "Computer Vision is the scientific field focusing on automated visual understanding and image feature extraction."
+    },
+    {
+        q: "41. An AI system updates its suggestions as it receives new feedback about a user's changing habits. Which AI traits are demonstrated?",
+        options: ["A. Speech and Visual Perception", "B. Learning and Adaptation", "C. Physical Motion and Storage", "D. Translation and Parsing"],
+        answer: 1,
+        explanation: "Updating outputs dynamically based on fresh interactions exemplifies real-time adaptation and machine learning."
+    },
+    {
+        q: "42. What is considered a best practice during routine computer hardware maintenance?",
+        options: ["A. Ignoring minor fan noises until failure", "B. Scheduling regular system inspections and maintenance intervals", "C. Skipping firmware updates", "D. Performing hardware repairs without proper safety knowledge"],
+        answer: 1,
+        explanation: "Establishing periodic physical and logical inspection schedules prevents unexpected equipment failure."
+    },
+    {
+        q: "43. What capability allows an AI navigation tool to evaluate live traffic, ongoing roadwork, and distances to pick an optimal driving path?",
+        options: ["A. Automated Translation", "B. Reasoning and Problem-Solving", "C. Image Optical Character Recognition", "D. Speech Recognition"],
+        answer: 1,
+        explanation: "AI route planning uses graph search and optimization algorithms to reason through complex constraint parameters."
+    },
+    {
+        q: "44. What primary advantage does Deep Learning offer when working with large volumes of unstructured image data?",
+        options: ["A. It relies on explicit IF-THEN statements written by programmers.", "B. Its multi-layered neural networks can learn complex features directly from raw data.", "C. It operates without hardware processing power.", "D. It simplifies images into basic numeric spreadsheets."],
+        answer: 1,
+        explanation: "Deep networks automatically extract representation features directly from unstructured sensory inputs without manual feature engineering."
+    },
+    {
+        q: "45. A student claims, 'AI systems are just fast standard calculators.' Why is this statement inaccurate?",
+        options: ["A. Calculators can learn from past mistakes, while AI cannot.", "B. AI can detect patterns, adapt from data, and assist in complex decision-making.", "C. AI systems run much slower than standard calculators.", "D. Calculators use neural networks, whereas AI uses simple arithmetic."],
+        answer: 1,
+        explanation: "Unlike simple mathematical calculators, AI models extract implicit features, recognize patterns, and adapt to unstructured inputs."
+    },
+    {
+        q: "46. A user asks a text-based AI assistant a question and receives a newly composed response. Which primary capability is being used?",
+        options: ["A. Language Generation and Question Answering", "B. Biometric Identification", "C. Physical Device Control", "D. Computer Vision Parsing"],
+        answer: 0,
+        explanation: "Generative AI and Natural Language Generation (NLG) enable conversational systems to formulate natural language responses."
+    },
+    {
+        q: "47. What constitutes hardware maintenance?",
+        options: ["A. Writing software scripts", "B. Performing regular cleaning, inspections, repairs, and hardware upgrades", "C. Searching for web pages online", "D. Creating text documents"],
+        answer: 1,
+        explanation: "Hardware maintenance encompasses the physical and operational care required to keep computing systems running efficiently."
+    },
+    {
+        q: "48. A developer wants to create an automated system that decides whether an ATM cash request should proceed by evaluating account balances, daily limits, and PIN entries. What approach is best suited here?",
+        options: ["A. Traditional Rule-Based Programming", "B. Unsupervised Neural Networks", "C. Deep Learning", "D. Generative AI"],
+        answer: 0,
+        explanation: "Transactional verification logic relies on precise, deterministic Boolean comparisons best handled by rule-based software."
+    },
+    {
+        q: "49. A medical system uses pre-established decision structures built by specialist physicians to guide clinical choices. Which model does this represent?",
+        options: ["A. Symbolic and Rule-Based Systems", "B. Deep Learning Networks", "C. Unsupervised Clustering", "D. Computer Vision Models"],
+        answer: 0,
+        explanation: "Expert systems compile domain knowledge into explicit rule representations (Symbolic AI) to guide operational workflows."
+    },
+    {
+        q: "50. A teacher uses an AI system to draft specialized lesson plans, then reviews and modifies the content before teaching. What does this workflow illustrate?",
+        options: ["A. AI should completely replace teaching professionals.", "B. AI can augment human work while human oversight ensures quality and relevance.", "C. Educators should avoid using digital tools.", "D. AI output is always free of errors."],
+        answer: 1,
+        explanation: "Human-in-the-loop AI workflows combine artificial generation velocity with expert human judgment and evaluation."
+    },
+    {
+        q: "51. A student wants to pursue a career focused on analyzing datasets, building predictive models, and working with advanced machine learning tools. Which role fits best?",
+        options: ["A. Data Scientist or Machine Learning Engineer", "B. Basic Data Entry Clerk", "C. File Archivist", "D. Office Systems Assistant"],
+        answer: 0,
+        explanation: "Data Science and Machine Learning Engineering roles specialize in statistical analysis, model design, and predictive analytics."
+    },
+    {
+        q: "52. A business uses static rules for computing employee taxes and machine learning models for forecasting sales trends. Why is this dual strategy effective?",
+        options: ["A. Tax rules are fixed and structured, while consumer behavior involves variable patterns.", "B. Both operations use identical algorithmic processing.", "C. Machine learning cannot process numerical values.", "D. Traditional programming cannot handle business functions."],
+        answer: 0,
+        explanation: "Selecting programming paradigms depends on task structures: fixed rules suit exact calculations; ML suits non-linear predictive trends."
+    },
+    {
+        q: "53. An educator wants to launch an AI personalized learning platform for a school. Which team composition offers the best chance of success?",
+        options: ["A. A single programmer working independently", "B. A collaborative team including EdTech specialists, teachers, and AI/data professionals", "C. A design consultant working alone", "D. A single financial auditor"],
+        answer: 1,
+        explanation: "Implementing applied AI systems effectively requires interdisciplinary collaboration between domain experts, pedagogical leaders, and technical developers."
+    },
+    {
+        q: "54. Which scenario illustrates AI-powered recommendation technology?",
+        options: ["A. A standard clock displaying the time", "B. A digital calculator computing 5 × 5", "C. A video platform suggesting shows based on a user's viewing history", "D. An alarm triggering at a preset time"],
+        answer: 2,
+        explanation: "Personalized content generation based on user interaction trends exemplifies algorithmic recommendation models."
+    },
+    {
+        q: "55. Which AI capability enables a system to unlock a smartphone screen by verifying a user's facial features?",
+        options: ["A. Facial Recognition", "B. Language Translation", "C. Natural Language Generation", "D. Sentiment Analysis"],
+        answer: 0,
+        explanation: "Biometric facial identification processes distinct facial landmark ratios to verify authorized users."
+    },
+    {
+        q: "56. An AI platform identifies spam by reviewing thousands of sample messages labeled as spam or legitimate. What core capability is being used?",
+        options: ["A. Pattern Recognition", "B. Machine Translation", "C. Computer Vision", "D. Autonomous Navigation"],
+        answer: 0,
+        explanation: "Pattern recognition enables statistical classification models to isolate common characteristics associated with distinct target classes."
+    },
+    {
+        q: "57. An AI system tracks past student performance metrics to deliver tailored practice material. What AI characteristic is shown?",
+        options: ["A. Fixed Execution", "B. Continuous Learning and Adaptation", "C. Static Rule Retrieval", "D. Hardware Maintenance"],
+        answer: 1,
+        explanation: "Adjusting instructional difficulty dynamically based on historical performance metrics reflects algorithmic adaptation."
+    },
+    {
+        q: "58. System A updates its predictions as it receives fresh data, while System B outputs the exact same results regardless of new input. What can be concluded?",
+        options: ["A. Both systems adapt at the same rate.", "B. System A demonstrates adaptive capabilities better than System B.", "C. System B is more advanced than System A.", "D. Neither system relies on software algorithms."],
+        answer: 1,
+        explanation: "Adaptability in intelligent systems requires updating models or parameters dynamically in response to new environmental inputs."
+    },
+    {
+        q: "59. Which of the following is a key component required for training modern AI models?",
+        options: ["A. Raw Data", "B. Internet search engines", "C. Manual paper logs", "D. Static text documents"],
+        answer: 0,
+        explanation: "Data is the foundational driver used by machine learning algorithms to learn functional relationships and generalizable patterns."
+    },
+    {
+        q: "60. Why are specialized hardware units like GPUs often used over standard CPUs when training Deep Learning models?",
+        options: ["A. GPUs consume no electricity during training.", "B. GPUs can execute thousands of parallel matrix calculations simultaneously.", "C. GPUs do not require software algorithms.", "D. GPUs eliminate the need for training data."],
+        answer: 1,
+        explanation: "GPUs feature highly parallel processing architectures optimized for performing linear algebra and matrix arithmetic at scale."
+    },
+    {
+        q: "61. Why is thermal paste applied between a CPU and its heatsink during hardware assembly?",
+        options: ["A. To permanently glue the processor to the motherboard", "B. To fill microscopic air gaps and facilitate efficient heat transfer", "C. To prevent electrical current from entering the processor", "D. To act as a protective barrier against liquid spills"],
+        answer: 1,
+        explanation: "Thermal paste eliminates air gaps between conductive surfaces to optimize thermal dissipation away from the CPU."
+    },
+    {
+        q: "62. An IT technician applies compressed air to clean dust out of computer cooling fans. What safety precaution should be taken with the fan blades?",
+        options: ["A. Hold the fan blades stationary so they do not over-spin and generate static electricity or damage bearings.", "B. Spin the fans as fast as possible with the air canister to test their bearings.", "C. Wash the fan blades with tap water while compressed air is applied.", "D. Disconnect the power supply while keeping the computer powered on."],
+        answer: 0,
+        explanation: "Allowing compressed air to spin cooling fans freely can exceed design RPM limits, damaging fan bearings or sending back-EMF voltage to the motherboard."
+    },
+    {
+        q: "63. What hardware component provides temporary, high-speed volatile storage for active processes during computer operation?",
+        options: ["A. Hard Disk Drive (HDD)", "B. Random Access Memory (RAM)", "C. Read-Only Memory (ROM)", "D. Solid State Drive (SSD)"],
+        answer: 1,
+        explanation: "RAM serves as volatile system memory that holds live application data and instructions for rapid CPU retrieval."
+    },
+    {
+        q: "64. A user experiences sudden unexpected computer shutdowns while running resource-intensive software. Monitoring reveals high CPU temperatures prior to shut down. What mechanism is likely triggering?",
+        options: ["A. Corrective Driver Update", "B. Thermal Throttling / Automatic Thermal Shutdown", "C. Unsupervised Learning Reset", "D. Power Supply Overcharge Protection"],
+        answer: 1,
+        explanation: "Modern processors incorporate safety logic that throttles clock speeds or forces system shutdowns to prevent hardware damage from severe overheating."
+    },
+    {
+        q: "65. What safety device should a technician wear to prevent Electrostatic Discharge (ESD) damage when handling sensitive computer hardware components?",
+        options: ["A. Rubberized insulating boots", "B. An anti-static wrist strap connected to a grounded surface", "C. Thermal resistance gloves", "D. Anti-glare protective eyewear"],
+        answer: 1,
+        explanation: "An anti-static wrist strap safely bleeds off static electricity accumulation from the technician's body before it can damage delicate microcircuits."
+    },
+    {
+        q: "66. Which type of maintenance action involves installing operating system security patches and updating hardware device drivers?",
+        options: ["A. Physical Hardware Overhaul", "B. Logical / Software Preventive Maintenance", "C. Corrective Component Replacement", "D. Emergency Hardware Replacement"],
+        answer: 1,
+        explanation: "Software and firmware maintenance—such as updating drivers and security updates—prevents system instability and protects physical hardware operation."
+    },
+    {
+        q: "67. What is the primary purpose of an Uninterruptible Power Supply (UPS) in a data center environment?",
+        options: ["A. To permanently replace the primary electrical utility provider", "B. To provide emergency battery backup power during electrical outages and protect against voltage spikes", "C. To lower the overall operating temperature inside server chassis", "D. To automatically back up application source code to the cloud"],
+        answer: 1,
+        explanation: "UPS systems offer instantaneous emergency power reserves and line conditioning, preventing data corruption and hardware failure from abrupt power loss."
+    },
+    {
+        q: "68. A computer fails to display anything on screen during startup and emits a series of audible beeps from the motherboard. What is the primary function of these POST beep codes?",
+        options: ["A. Indicating successful operating system startup", "B. Signaling hardware initialization errors before display drivers are loaded", "C. Warning users that network bandwidth is congested", "D. Testing speaker hardware at high audio frequencies"],
+        answer: 1,
+        explanation: "Power-On Self-Test (POST) diagnostic codes alert technicians to early-stage hardware faults (such as memory or GPU errors) prior to monitor initialization."
+    },
+    {
+        q: "69. What maintenance task should be performed on magnetic Hard Disk Drives (HDDs) to consolidate fragmented files and improve file retrieval speeds?",
+        options: ["A. Optical Scanning", "B. Disk Defragmentation", "C. Firmware Re-flashing", "D. Thermal Pasting"],
+        answer: 1,
+        explanation: "Disk defragmentation reorganizes non-contiguous data blocks on mechanical magnetic hard drives to improve physical read-head seeking performance."
+    },
+    {
+        q: "70. What is a critical distinction between Solid State Drives (SSDs) and traditional Hard Disk Drives (HDDs)?",
+        options: ["A. HDDs use flash memory chips, while SSDs use spinning magnetic platters.", "B. SSDs have no moving mechanical parts, making them faster and more shock-resistant than HDDs.", "C. SSDs require active liquid cooling systems inside standard desktop cases.", "D. HDDs do not require power connectors to process data."],
+        answer: 1,
+        explanation: "SSDs utilize non-volatile NAND flash memory without moving mechanical parts, granting faster access speeds and superior resistance to physical shocks."
+    },
+    {
+        q: "71. In Machine Learning, what risk arises when a model is trained for too long on a small dataset, memorizing the noise rather than generalizable rules?",
+        options: ["A. Overfitting", "B. Underfitting", "C. Thermal Throttling", "D. Imperative Recursion"],
+        answer: 0,
+        explanation: "Overfitting occurs when a model fits training data too closely, learning random noise and failing to generalize accurately to unseen test data."
+    },
+    {
+        q: "72. An AI algorithm trained to detect medical anomalies yields high accuracy on training data but performs poorly on real patient data from new hospitals. What issue does this highlight?",
+        options: ["A. Lack of GPU processing power", "B. Poor Generalization Capability", "C. Hardware Failure", "D. Use of declarative programming"],
+        answer: 1,
+        explanation: "A model that fails to perform effectively on real-world distributions suffers from poor generalization capability."
+    },
+    {
+        q: "73. What role does an 'activation function' play inside an artificial neural network node?",
+        options: ["A. It regulates the hardware voltage supplied to GPU chips.", "B. It introduces non-linearity, enabling the network to learn complex patterns.", "C. It formats output text files into PDF documents.", "D. It converts speech audio directly into physical cooling commands."],
+        answer: 1,
+        explanation: "Activation functions introduce non-linear properties into artificial neural networks, allowing them to model complex non-linear relationships."
+    },
+    {
+        q: "74. In a Autonomous Vehicle system, what technology merges inputs from LiDAR, radar, and cameras to form an integrated environmental map?",
+        options: ["A. Optical Character Recognition", "B. Sensor Fusion", "C. Declarative Parsing", "D. Disk Defragmentation"],
+        answer: 1,
+        explanation: "Sensor fusion combines data from multiple sensory modalities (LiDAR, radar, cameras) to construct a coherent spatial environment representation."
+    },
+    {
+        q: "75. What is the primary function of Large Language Models (LLMs) in Natural Language Processing?",
+        options: ["A. Predicting the next token or word in a text sequence based on contextual probabilities", "B. Translating video keyframes into physical hardware instructions", "C. Executing step-by-step imperative calculations for payroll systems", "D. Regulating physical fan speeds in cloud data centers"],
+        answer: 0,
+        explanation: "LLMs utilize transformer architectures to predict probabilistic word/token sequences given previous context."
+    },
+    {
+        q: "76. What term describes human-annotated data used to train supervised machine learning models?",
+        options: ["A. Unstructured Noise", "B. Labeled Dataset / Ground Truth Data", "C. Probabilistic Hardware Log", "D. Defragmented File Table"],
+        answer: 1,
+        explanation: "Supervised models require ground-truth labeled datasets where input features are associated with verified output labels."
+    },
+    {
+        q: "77. Why is 'Explainable AI' (XAI) becoming increasingly important in high-stakes fields like healthcare and loan approvals?",
+        options: ["A. To allow AI models to run without any computer hardware", "B. To make complex 'black box' model decisions transparent and understandable to human evaluators", "C. To guarantee that machine learning models never require data updates", "D. To convert imperative software programs into machine code"],
+        answer: 1,
+        explanation: "Explainable AI aims to illuminate opaque neural network models so humans can audit, trust, and verify automated decisions."
+    },
+    {
+        q: "78. An AI developer uses dynamic rewards to train a virtual character to navigate a maze through trial and error. What is the agent's goal in this setup?",
+        options: ["A. To minimize total storage space on the hard drive", "B. To maximize its cumulative reward score over time", "C. To convert visual pixels into text strings", "D. To execute a pre-written rule for every path step"],
+        answer: 1,
+        explanation: "In Reinforcement Learning, the agent strives to learn policy parameters that maximize cumulative scalar rewards over time."
+    },
+    {
+        q: "79. What artificial intelligence concept involves a model leveraging knowledge gained from solving one task to improve performance on a related task?",
+        options: ["A. Transfer Learning", "B. Corrective Maintenance", "C. Hardware Virtualization", "D. Imperative Compiling"],
+        answer: 0,
+        explanation: "Transfer Learning reuses feature representations learned from one task as the starting baseline for training on a new related task."
+    },
+    {
+        q: "80. Which scenario represents an ethical concern related to AI deployment?",
+        options: ["A. An algorithm processing matrix calculations faster on a GPU than a CPU", "B. Algorithmic bias resulting in unfair discrimination within automated hiring tools", "C. Using compressed air to clean server chassis dust filters", "D. Scheduling routine disk defragmentation during off-peak office hours"],
+        answer: 1,
+        explanation: "Algorithmic bias occurs when training data reflects historical human biases, leading automated decision systems to generate unfair discriminatory outcomes."
+    }
+];
+
+let userScore = 0;
+const answeredQuestions = new Set();
+
+function renderQuiz() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = '';
+
+    quizData.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+
+        const questionTitle = document.createElement('div');
+        questionTitle.className = 'question-text';
+        questionTitle.innerText = item.q;
+        card.appendChild(questionTitle);
+
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'options-container';
+
+        item.options.forEach((opt, optIndex) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectAnswer(index, optIndex, card);
+            optionsContainer.appendChild(btn);
+        });
+
+        card.appendChild(optionsContainer);
+
+        const feedback = document.createElement('div');
+        feedback.id = `feedback-${index}`;
+        feedback.className = 'feedback-box';
+        card.appendChild(feedback);
+
+        container.appendChild(card);
+    });
+}
+
+function selectAnswer(questionIndex, selectedOptionIndex, cardElement) {
+    if (answeredQuestions.has(questionIndex)) return;
+
+    answeredQuestions.add(questionIndex);
+    const data = quizData[questionIndex];
+    const buttons = cardElement.querySelectorAll('.option-btn');
+    const feedback = cardElement.querySelector('.feedback-box');
+
+    buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === data.answer) {
+            btn.classList.add('correct');
+        } else if (idx === selectedOptionIndex) {
+            btn.classList.add('incorrect');
+        }
+    });
+
+    if (selectedOptionIndex === data.answer) {
+        userScore++;
+        document.getElementById('score').innerText = userScore;
+        feedback.className = 'feedback-box show correct';
+        feedback.innerHTML = `<strong>Correct!</strong><br>${data.explanation}`;
+    } else {
+        feedback.className = 'feedback-box show incorrect';
+        feedback.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <em>${data.options[data.answer]}</em>.<br>${data.explanation}`;
+    }
+}
+
+window.onload = renderQuiz;
+</script>
+
+</body>
+</html>
