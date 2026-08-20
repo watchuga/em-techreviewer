@@ -1,873 +1,1110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI & Hardware Maintenance Reviewer</title>
-    <style>
-        :root {
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --accent-color: #2563eb;
-            --correct-color: #16a34a;
-            --incorrect-color: #dc2626;
-            --border-color: #e5e7eb;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICT & AI Interactive Master Reviewer</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #030712 100%);
+      --card-bg: rgba(17, 24, 39, 0.75);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --accent-purple: #c084fc;
+      --accent-cyan: #22d3ee;
+      --accent-amber: #fbbf24;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --correct-color: #4ade80;
+      --correct-bg: rgba(34, 197, 94, 0.18);
+      --incorrect-color: #f87171;
+      --incorrect-bg: rgba(239, 68, 68, 0.18);
+      --shadow-glow: 0 10px 35px -5px rgba(0, 0, 0, 0.5);
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 25px 15px;
+      overflow-x: hidden;
+    }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    /* HEADER */
+    header {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 820px;
+      padding: 22px 20px;
+      text-align: center;
+      box-shadow: var(--shadow-glow);
+      margin-bottom: 20px;
+    }
 
-        h1 {
-            margin: 0 0 10px 0;
-            color: #1e293b;
-        }
+    header h1 {
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #60a5fa, #c084fc, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
 
-        .score-board {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
 
-        .question-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-        }
+    /* DASHBOARD */
+    .dashboard {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      max-width: 820px;
+      margin-bottom: 15px;
+    }
 
-        .question-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
+    .stat-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-glow);
+    }
 
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+    .stat-icon {
+      font-size: 1.3rem;
+      color: var(--accent-cyan);
+      background: rgba(34, 211, 238, 0.1);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        .option-btn {
-            background-color: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px 15px;
-            text-align: left;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-color);
-        }
+    .stat-data {
+      display: flex;
+      flex-direction: column;
+    }
 
-        .option-btn:hover:not([disabled]) {
-            background-color: #e2e8f0;
-            border-color: #cbd5e1;
-        }
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
 
-        .option-btn.correct {
-            background-color: #dcfce7;
-            border-color: var(--correct-color);
-            color: #14532d;
-            font-weight: bold;
-        }
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
 
-        .option-btn.incorrect {
-            background-color: #fee2e2;
-            border-color: var(--incorrect-color);
-            color: #7f1d1d;
-        }
+    /* PROGRESS BAR */
+    .progress-container {
+      width: 100%;
+      max-width: 820px;
+      background: rgba(15, 23, 42, 0.6);
+      height: 8px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
 
-        .feedback-box {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 6px;
-            display: none;
-            font-size: 0.95rem;
-        }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+      border-radius: 20px;
+      transition: width 0.3s ease;
+    }
 
-        .feedback-box.show {
-            display: block;
-        }
+    /* QUIZ CARD */
+    .quiz-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 820px;
+      padding: 30px;
+      box-shadow: var(--shadow-glow);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
 
-        .feedback-box.correct {
-            background-color: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #166534;
-        }
+    .quiz-card.slide-out {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
 
-        .feedback-box.incorrect {
-            background-color: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-        }
-    </style>
+    .quiz-card.slide-in {
+      animation: slideIn 0.3s forwards ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .question-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(192, 132, 252, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(192, 132, 252, 0.3);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+
+    .question-text {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      line-height: 1.6;
+      margin-bottom: 22px;
+      font-weight: 600;
+    }
+
+    /* OPTIONS GRID */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-align: left;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .option-btn:hover:not(.disabled) {
+      border-color: var(--primary-hover);
+      background: rgba(59, 130, 246, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .option-letter {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      font-weight: 800;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .option-btn:hover:not(.disabled) .option-letter {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .option-btn.selected {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.22);
+    }
+
+    .option-btn.correct-reveal {
+      border-color: var(--correct-color) !important;
+      background-color: var(--correct-bg) !important;
+      color: #ffffff !important;
+    }
+
+    .option-btn.correct-reveal .option-letter {
+      background: var(--correct-color) !important;
+      color: #000 !important;
+    }
+
+    .option-btn.incorrect-reveal {
+      border-color: var(--incorrect-color) !important;
+      background-color: var(--incorrect-bg) !important;
+      color: #ffffff !important;
+    }
+
+    .option-btn.incorrect-reveal .option-letter {
+      background: var(--incorrect-color) !important;
+      color: #ffffff !important;
+    }
+
+    .option-btn.disabled {
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    /* CONTROLS & FEEDBACK */
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit {
+      background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-submit:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-next {
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(192, 132, 252, 0.3);
+    }
+
+    .btn-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(34, 211, 238, 0.4);
+    }
+
+    .feedback-box {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 12px;
+      display: none;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .feedback-box.correct {
+      background: var(--correct-bg);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: var(--correct-color);
+    }
+
+    .feedback-box.incorrect {
+      background: var(--incorrect-bg);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: var(--incorrect-color);
+    }
+
+    /* RESULTS CARD */
+    .results-card {
+      display: none;
+      text-align: center;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 40px 25px;
+      box-shadow: var(--shadow-glow);
+      width: 100%;
+      max-width: 820px;
+    }
+
+    .trophy-badge {
+      font-size: 3.5rem;
+      color: var(--accent-amber);
+      margin-bottom: 12px;
+    }
+
+    .results-score {
+      font-size: 3rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--correct-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 8px 0;
+    }
+
+    .results-message {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 600px) {
+      .quiz-card { padding: 20px; }
+      header h1 { font-size: 1.4rem; }
+      .dashboard { gap: 6px; }
+      .stat-card { padding: 8px 10px; gap: 8px; }
+      .stat-icon { width: 32px; height: 32px; font-size: 0.95rem; }
+      .stat-value { font-size: 0.95rem; }
+      .btn { padding: 10px 18px; font-size: 0.85rem; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>reviewer ng grade 12 q -sir j</h1>
-        <div class="score-board">Score: <span id="score">0</span> / <span id="total">80</span></div>
-    </header>
+  <header>
+    <h1><i class="fa-solid fa-microchip"></i> ICT & AI Systems Master Reviewer</h1>
+    <p>Comprehensive 40-Question Assessment — Adaptive Exam Reviewer</p>
+  </header>
 
-    <div id="quiz-container"></div>
-</div>
+  <div class="dashboard">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-list-check"></i></div>
+      <div class="stat-data">
+        <span class="stat-label">Progress</span>
+        <span class="stat-value" id="progress-text">1 / 40</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+      <div class="stat-data">
+        <span class="stat-label">Score</span>
+        <span class="stat-value" id="score-text">0</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-bullseye"></i></div>
+      <div class="stat-data">
+        <span class="stat-label">Accuracy</span>
+        <span class="stat-value" id="accuracy-text">0%</span>
+      </div>
+    </div>
+  </div>
 
-<script>
-const quizData = [
-    {
-        q: "1. Which technology parses digitized images of rasterized characters to convert physical print into machine-encoded text format?",
+  <div class="progress-container">
+    <div class="progress-fill" id="progress-bar"></div>
+  </div>
+
+  <div class="quiz-card" id="quiz-card">
+    <div class="question-badge" id="question-badge">
+      <i class="fa-solid fa-layer-group"></i> Question 1
+    </div>
+    
+    <div class="question-text" id="question-text">Loading prompt...</div>
+
+    <div class="options-grid" id="options-grid"></div>
+
+    <div class="feedback-box" id="feedback-box"></div>
+
+    <div class="controls">
+      <button class="btn btn-submit" id="submit-btn" disabled onclick="checkAnswer()">
+        <span>Lock In Answer</span>
+        <i class="fa-solid fa-lock"></i>
+      </button>
+      <button class="btn btn-next" id="next-btn" style="display: none;" onclick="nextQuestion()">
+        <span>Next Challenge</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="results-card" id="results-card">
+    <div class="trophy-badge">
+      <i class="fa-solid fa-trophy"></i>
+    </div>
+    <h2>Reviewer Completed!</h2>
+    <div class="results-score" id="final-score">0 / 40</div>
+    <p class="results-message" id="final-message">Great effort working through the ICT & AI Systems reviewer!</p>
+    <button class="btn btn-next" onclick="restartQuiz()">
+      <i class="fa-solid fa-rotate-right"></i> Practice Again
+    </button>
+  </div>
+
+  <script>
+    // 40 PARAPHRASED & DISTRACTOR-ENHANCED QUESTIONS (SHUFFLED UPON INITIALIZATION)
+    const rawQuestions = [
+      {
+        question: "How would you best define the primary scope of physical hardware maintenance?",
         options: [
-            "A. Natural Language Generation (NLG)",
-            "B. Optical Character Recognition (OCR)",
-            "C. Visual Semantic Segmentation",
-            "D. Sentiment Analysis"
+          "Focusing exclusively on OS installation and software driver optimization.",
+          "Systematic inspection, physical cleaning, component restoration, and physical upgrades of hardware.",
+          "Monitoring internet connectivity bandwidth and network traffic routing.",
+          "Managing word processing software and spreadsheet files."
         ],
-        answer: 1,
-        explanation: "WELCOME SA REVIEWER NI SIR J"
-    },
-    {
-        q: "2. An automated telemetry monitoring system tracks server thermal metrics continuously to alert technicians of impending overheating before component failure occurs. Which strategy is this?",
+        correct: 1,
+        explanation: "Hardware maintenance encompasses hands-on physical upkeep, thermal component cleaning, diagnostic checks, and physical hardware servicing."
+      },
+      {
+        question: "Which proactive strategy is specifically designed to eliminate hardware failures before they occur through scheduled routine care?",
         options: [
-            "A. Corrective System Repair",
-            "B. Preventative Calendar Inspection",
-            "C. Predictive Condition-Based Maintenance",
-            "D. Static Hardware Auditing"
+          "Corrective Maintenance",
+          "Preventive Maintenance",
+          "Reactive Maintenance",
+          "Emergency Overhaul"
         ],
-        answer: 2,
-        explanation: "Predictive maintenance relies on real-time sensor metrics and historical performance signals to anticipate breakdowns prior to functional failure."
-    },
-    {
-        q: "3. What primary milestone was achieved as a result of the 1956 Dartmouth Summer Research Conference?",
+        correct: 1,
+        explanation: "Preventive maintenance relies on scheduled cleaning, servicing, and routine checks to stop hardware issues before they happen."
+      },
+      {
+        question: "An IT protocol uses active diagnostic monitoring software to analyze component wear and predict imminent mechanical breakdowns before failure. What strategy is this?",
         options: [
-            "A. The architecture for the first consumer microprocessor was finalized.",
-            "B. Artificial Intelligence was formally recognized and established as a distinct academic discipline.",
-            "C. The first autonomous self-driving prototype successfully passed open road testing.",
-            "D. World consensus was reached on standardized internet network protocols."
+          "Preventive Maintenance",
+          "Predictive Maintenance",
+          "Corrective Maintenance",
+          "Manual Servicing"
         ],
-        answer: 1,
-        explanation: "Organized by figures like John McCarthy, the 1956 Dartmouth workshop officially inaugurated Artificial Intelligence as a formal academic field."
-    },
-    {
-        q: "4. Which component acts specifically as an input peripheral when interacting with a computer architecture?",
+        correct: 1,
+        explanation: "Predictive maintenance relies on real-time data sensor diagnostics and failure metrics to forecast when a part will break."
+      },
+      {
+        question: "Which scenario below represents a direct implementation of corrective maintenance?",
         options: [
-            "A. Flat Panel Display",
-            "B. Laser Print Engine",
-            "C. Mechanical Key Switch Matrix",
-            "D. Audio Transducer Speaker"
+          "Blowing dust out of the cooling fins every three months.",
+          "Swapping out a completely non-functional drive after it suffers a total mechanical failure.",
+          "Patching system drivers during routine maintenance windows.",
+          "Applying fresh thermal paste during yearly computer overhauls."
         ],
-        answer: 2,
-        explanation: "Keyboards are fundamental input hardware devices that convert physical button presses into binary character signals."
-    },
-    {
-        q: "5. An organization wants to analyze customer feedback feeds to automatically group entries into positive, negative, or neutral sentiment. What is the most effective approach?",
+        correct: 1,
+        explanation: "Corrective maintenance is reactive—it occurs strictly after a breakdown or component failure has occurred."
+      },
+      {
+        question: "Among the following computer hardware components, which one functions primarily as an input device?",
         options: [
-            "A. Writing hardcoded conditional IF-THEN lookup tables for every word in the dictionary.",
-            "B. Training a supervised Natural Language Processing model on labeled text corpora.",
-            "C. Counting raw character and sentence lengths using a basic string evaluation loop.",
-            "D. Implementing declarative hardware scripts across the server infrastructure."
+          "Dot Matrix Printer",
+          "High-Definition Monitor",
+          "Acoustic Speaker",
+          "Mechanical Keyboard"
         ],
-        answer: 1,
-        explanation: "NLP and Machine Learning excel at sentiment analysis by picking up complex, contextual language patterns that simple static lookup rules miss."
-    },
-    {
-        q: "6. Why is traditional rule-based software development optimal for predictable tasks like computing payroll taxes?",
+        correct: 3,
+        explanation: "Keyboards feed user alphanumeric data into the system, making them core input peripherals."
+      },
+      {
+        question: "Which professional infrastructure environment continuously tracks server telemetry and ambient conditions to maintain zero unplanned downtime?",
         options: [
-            "A. It dynamically adjusts tax logic by inferring statutory updates without human intervention.",
-            "B. The target logic relies on unambiguous, explicit conditions and mathematical formulas that can be hardcoded.",
-            "C. It leverages neural hidden layers to estimate applicable tax deductions.",
-            "D. It generates new execution rules automatically as employee counts scale."
+          "Data Center",
+          "Staff Lounge",
+          "Public Reading Room",
+          "Campus Grounds"
         ],
-        answer: 1,
-        explanation: "Deterministic calculations governed by exact statutory guidelines are best executed via hardcoded rule-based programming."
-    },
-    {
-        q: "7. A media platform analyzes a user's historical viewing logs (e.g., watching historical documentaries) to generate personalized viewing feeds. What form of data primarily powers this AI?",
+        correct: 0,
+        explanation: "Data centers enforce strict real-time telemetry monitoring to guarantee uninterrupted uptime and server stability."
+      },
+      {
+        question: "What is a major operational advantage gained from structured hardware maintenance?",
         options: [
-            "A. Synthetic relational index values",
-            "B. Historical user interaction and activity logs",
-            "C. Static user profile settings that never update",
-            "D. System storage capacity and buffer metrics"
+          "Increased overall repair and replacement expenses.",
+          "Unplanned drop in system processing speeds.",
+          "Extended operational life and long-term durability of hardware assets.",
+          "Elevated frequency of emergency technical interventions."
         ],
-        answer: 1,
-        explanation: "Personalized recommendation models rely on implicit activity logs and historical interaction data to predict user preferences."
-    },
-    {
-        q: "8. What foundational philosophy best describes Good Old-Fashioned AI (GOFAI)?",
+        correct: 2,
+        explanation: "Proper component care preserves internal hardware health, directly extending device service lifespan."
+      },
+      {
+        question: "Which of the following presents a known obstacle or risk during physical hardware maintenance operations?",
         options: [
-            "A. Extracting pattern weights solely via deep neural backpropagation.",
-            "B. Modeling intelligence using formal logic, explicit symbols, and hardcoded rule frameworks.",
-            "C. Eliminating programmatic logic entirely in favor of trial-and-error reinforcement.",
-            "D. Capturing sensory environments using hardware visual arrays."
+          "Gains in user productivity.",
+          "Enhanced security posture.",
+          "Component incompatibility between newly upgraded and existing system parts.",
+          "Increased durability of thermal components."
         ],
-        answer: 1,
-        explanation: "GOFAI (Symbolic AI) relies on top-down domain modeling using formal logic rules, symbols, and expert systems rather than probabilistic learning."
-    },
-    {
-        q: "9. An interactive tool listens to spoken phrases in one language and outputs spoken equivalents in another natural language. Which primary capability drives this tool?",
+        correct: 2,
+        explanation: "Inter-device compatibility friction often arises when matching newer hardware upgrades with older legacy systems."
+      },
+      {
+        question: "What is considered an industry-standard best practice during routine computer maintenance?",
         options: [
-            "A. Optical Spatial Parsing",
-            "B. Machine Translation & NLP",
-            "C. Autonomous Visual Mapping",
-            "D. Pattern Anomaly Detection"
+          "Ignoring minor fan noises or minor thermal warnings.",
+          "Establishing and adhering to a structured inspection calendar.",
+          "Skipping recommended BIOS/firmware patches.",
+          "Disassembling complex high-voltage power components without technical knowledge."
         ],
-        answer: 1,
-        explanation: "Machine Translation, a branch of Natural Language Processing, evaluates contextual grammar and vocabulary to translate between natural human languages."
-    },
-    {
-        q: "10. Which equation accurately illustrates the core process of traditional software engineering?",
+        correct: 1,
+        explanation: "A structured, regular maintenance schedule prevents minor oversights from turning into catastrophic component failures."
+      },
+      {
+        question: "A automated telemetry system flags that a rack server's processor temperature is spiking abnormally high during idle mode, signaling risk prior to system failure. This relies on:",
         options: [
-            "A. Data + Model = Input",
-            "B. Input + Rules = Output",
-            "C. Input + Output = Model",
-            "D. Rules + Predictions = Hardware"
+          "Predictive Maintenance",
+          "Corrective Maintenance",
+          "Emergency Intervention",
+          "Ad-hoc Servicing"
         ],
- 
-        explanation: "Deterministic programs follow fixed computational pathways, yielding identical outputs for identical inputs every time."
-    },
-    {
-        q: "11. Which scenario is an example of corrective hardware maintenance?",
+        correct: 0,
+        explanation: "By analyzing environmental metrics to preempt a breakdown before it happens, the facility utilizes predictive maintenance."
+      },
+      {
+        question: "Which application scenario demonstrates genuine AI-driven recommendation functionality?",
         options: [
-            "A. Blowing compressed air through a heatsink on a planned monthly cycle.",
-            "B. Swapping out a failed power supply unit after the system refuses to turn on.",
-            "C. Updating operating system security patches on a weekly schedule.",
-            "D. Inspecting network cable latches during routine rack checks."
+          "A standard scientific calculator evaluating a fixed multiplication sequence.",
+          "A digital watch reading its internal quartz timer.",
+          "A media platform suggesting customized playlists by evaluating historical viewing patterns.",
+          "A digital clock ringing a tone at a preset user time."
         ],
-        answer: 1,
-        explanation: "Corrective maintenance is reactive work done to fix or replace hardware *after* a malfunction or breakdown has occurred."
-    },
-    {
-        q: "12. A automated turnstile identifies students walking past a camera lens and marks them present on the class roster. Which technology powers this system?",
+        correct: 2,
+        explanation: "AI recommendation systems process dynamic user behavior profiles and history patterns to infer customized choices."
+      },
+      {
+        question: "A radiological center uses an AI tool to highlight subtle cellular anomalies in diagnostic scans. What is the most accurate understanding of this technology's role?",
         options: [
-            "A. Collaborative Recommendation Filtering",
-            "B. Facial Recognition / Computer Vision",
-            "C. Neural Machine Translation",
-            "D. Lexical Language Generation"
+          "The AI fully replaces medical doctors and diagnostic staff.",
+          "Medical training becomes obsolete because the software acts independently.",
+          "The AI guarantees 100% error-free medical assessments.",
+          "The AI serves as a powerful diagnostic assistant to support clinical decision-making."
         ],
-        answer: 1,
-        explanation: "Facial recognition uses vision algorithms to analyze visual features from video feeds and match them against known facial biometric vectors."
-    },
-    {
-        q: "13. Which operational task is most appropriately handled using traditional deterministic software rather than Machine Learning?",
+        correct: 3,
+        explanation: "AI acts as a decision-support augment, enhancing human specialist capability rather than completely replacing human expertise."
+      },
+      {
+        question: "An international traveler speaks a sentence in Tagalog, and a translation tool immediately outputs natural English audio. Which specific AI discipline enables this?",
         options: [
-            "A. Calculating employee overtime pay based on codified labor law parameters.",
-            "B. Identifying suspicious credit card transactions across global payment feeds.",
-            "C. Transcribing messy handwritten clinic notes into text documents.",
-            "D. Forecasting retail consumer purchasing trends for the upcoming quarter."
+          "Computer Vision",
+          "Machine Translation & NLP",
+          "Autonomous Navigation",
+          "Financial Anomaly Detection"
         ],
-        answer: 0,
-        explanation: "Payroll calculation is completely deterministic and follows strict, static math formulas, making traditional conditional code the right tool."
-    },
-    {
-        q: "14. An enterprise implements AI tools to automate routine data indexing so staff can shift focus toward strategic analysis. What workforce trend does this demonstrate?",
+        correct: 1,
+        explanation: "Cross-lingual conversion relies directly on Natural Language Processing (NLP) and Neural Machine Translation."
+      },
+      {
+        question: "A university wishes to automate campus gate logging by analyzing real-time facial traits of entering students. Which AI subfield is best suited for this?",
         options: [
-            "A. AI eliminates all human workforce requirements across every department.",
-            "B. AI automates repetitive tasks while shifting human roles toward higher-level decision making.",
-            "C. AI deployment has zero effect on job duties or productivity.",
-            "D. AI adoption reduces organizational productivity overall."
+          "Facial Recognition",
+          "Machine Translation",
+          "Content Generation",
+          "Heuristic Rule Engine"
         ],
-        answer: 1,
-        explanation: "Automation frequently takes over low-level, repetitive tasks while shifting human roles toward tasks requiring critical thinking and domain expertise."
-    },
-    {
-        q: "35. A financial engine calculates investment risks by simulating uncertain market conditions and generating range likelihoods. Which paradigm is best suited here?",
+        correct: 0,
+        explanation: "Facial recognition uses computer vision algorithms to extract facial geometry and match identity records automatically."
+      },
+      {
+        question: "When a podcast engine begins prioritizing science lectures for a student who regularly streams technology content, what source data is driving these recommendations?",
         options: [
-            "A. Probabilistic Programming",
-            "B. Deterministic Imperative Logic",
-            "C. Static Rule-Based Design",
-            "D. Hardware Peripheral Configuration"
+          "Historical user engagement metrics and continuous consumption patterns.",
+          "An uncalibrated random recommendation matrix.",
+          "Hardcoded static table entries set manually by developers.",
+          "System clock settings and timezone parameters."
         ],
-        answer: 0,
-        explanation: "Probabilistic programming allows developers to build models that explicitly account for uncertainty, outputting continuous probability distributions."
-    },
-    {
-        q: "36. Which definition best summarizes Artificial Intelligence as a discipline?",
+        correct: 0,
+        explanation: "Recommendation engines base output predictions on historical user logs, click data, and interaction patterns."
+      },
+      {
+        question: "Autonomous cars must identify pedestrians, interpret road signs, and gauge nearby vehicle velocities on the fly. Why is AI essential here?",
         options: [
-            "A. Computer software restricted to executing basic arithmetic calculations.",
-            "B. Computing systems engineered to perform tasks that typically require human cognitive intelligence.",
-            "C. Passive database systems designed to store unindexed files without processing them.",
-            "D. Traditional software execution restricted to hardcoded conditional scripts."
+          "It removes the need for hardware sensors like LIDAR or optical cameras.",
+          "It rapidly analyzes high-volume sensory data and extracts dynamic visual patterns.",
+          "It relies entirely on a single static logic instruction.",
+          "It guarantees complete immunity from all mechanical accidents."
         ],
-        answer: 1,
-        explanation: "AI refers to software and systems capable of performing cognitive tasks—like reasoning, visual perception, or language understanding—traditionally associated with human minds."
-    },
-    {
-        q: "37. Why are modern AI systems significantly more functional today compared to early research models from the 1970s?",
+        correct: 1,
+        explanation: "AI processes complex computer vision streams in real time, making split-second classification and spatial decisions."
+      },
+      {
+        question: "Why would a school pick an AI biometric scanner over a basic barcode scanner for taking attendance when students' lighting, angles, and poses constantly change?",
         options: [
-            "A. Modern progress is driven by powerful parallel hardware (GPUs), massive training datasets, and refined algorithms.",
-            "B. Contemporary AI models no longer require input data to generate accurate results.",
-            "C. Modern computer science completely abandoned mathematical modeling.",
-            "D. Early AI concepts were entirely discarded and replaced from scratch."
+          "AI algorithms adaptively identify core structural patterns despite minor visual variations.",
+          "AI hardware is universally cheaper than basic barcode readers.",
+          "Legacy software is strictly incapable of storing text names.",
+          "AI models are physically incapable of ever producing false negatives."
         ],
-        answer: 0,
-        explanation: "The convergence of scalable parallel compute hardware, massive datasets (the Internet), and modern neural architectures unlocked modern AI performance."
-    },
-    {
-        q: "38. Why is it impractical to write explicit, hardcoded conditional rules for recognizing human faces in images?",
+        correct: 0,
+        explanation: "Machine learning vision models generalize high-level features, allowing them to recognize subjects despite lighting or angle changes."
+      },
+      {
+        question: "Which conceptual equation correctly models traditional rule-based software development?",
         options: [
-            "A. Visual inputs contain endless variations in lighting, pose, angles, and features that cannot be captured manually.",
-            "B. Physical storage hardware is incapable of holding image files.",
-            "C. Image processing does not rely on underlying mathematical computations.",
-            "D. Traditional programming languages can only process plain text data."
+          "Input + Output = Machine Model",
+          "Data + Machine Predictions = Primary Input",
+          "Input + Explicit Rules = Output",
+          "Unprocessed Data + Deep Learning = Physical Hardware"
         ],
-        answer: 0,
-        explanation: "Visual variability (angles, lighting, features) creates too many edge cases for human programmers to hardcode manually; models must learn representations from data."
-    },
-    {
-        q: "39. Which specialized facility continuously monitors server temperatures, hardware health, and network traffic to prevent system downtime?",
+        correct: 2,
+        explanation: "Traditional programming requires human coders to write explicit logic rules that convert input data into expected outputs."
+      },
+      {
+        question: "Who is primarily responsible for framing the decision logic and explicit condition rules within traditional programming?",
         options: [
-            "A. Open-plan corporate breakroom",
-            "B. Enterprise Data Center",
-            "C. Academic public library",
-            "D. Physical sports arena"
+          "The computer compiler running autonomously.",
+          "The human software engineer/programmer.",
+          "The end user during software operation.",
+          "The remote web server hosting the app."
         ],
-        answer: 1,
-        explanation: "Data centers implement continuous environmental, thermal, and hardware telemetry monitoring to maintain high system availability."
-    },
-    {
-        q: "40. What field of AI focuses on analyzing, processing, and extracting structural features from static imagery and live video feeds?",
+        correct: 1,
+        explanation: "In traditional coding, human programmers manually define every IF-THEN conditional rule and step-by-step logic path."
+      },
+      {
+        question: "Why are structured administrative rules handled so well by traditional, non-AI programming models?",
         options: [
-            "A. Natural Language Processing",
-            "B. Computer Vision",
-            "C. Probabilistic Logical Parsing",
-            "D. Symbolic Rule Systems"
+          "Because traditional applications run without code instructions.",
+          "Because clear, deterministic rules can be explicitly hand-coded line-by-line.",
+          "Because non-AI apps learn organically from user mistakes.",
+          "Because traditional programming always uses underlying neural nets."
         ],
-        answer: 1,
-        explanation: "Computer Vision is the domain of AI that enables machines to extract, process, and understand meaningful information from visual inputs."
-    },
-    {
-        q: "41. An AI streaming assistant continuously adjusts its recommended content list as a user watches or skips videos. What core AI traits are being shown?",
+        correct: 1,
+        explanation: "When logic boundaries are fixed and unambiguous (e.g., standard math or fixed rules), hardcoded conditional logic is ideal."
+      },
+      {
+        question: "A basic calculator produces the exact same numeric result whenever it processes '50 × 4'. Which core computing property is demonstrated?",
         options: [
-            "A. Speech Parsing and Physical Control",
-            "B. Learning and Adaptation",
-            "C. Mechanical Motion and Hardware Storage",
-            "D. Hardcoded Logic and Static Execution"
+          "Dynamic Adaptation",
+          "Deterministic Predictability",
+          "Autonomous Machine Learning",
+          "Unsupervised Pattern Discovery"
         ],
-        answer: 1,
-        explanation: "Updating outputs dynamically based on real-time feedback loops is the definition of machine learning and system adaptation."
-    },
-    {
-        q: "42. Which action represents a standard best practice during routine computer hardware servicing?",
+        correct: 1,
+        explanation: "Traditional systems are deterministic—identical inputs fed into fixed rules always yield predictable, identical outputs."
+      },
+      {
+        question: "A banking system verifies account balance, PIN accuracy, and maximum withdrawal limits through explicit numeric conditional checks. Which software paradigm fits best?",
         options: [
-            "A. Ignoring fan noise until the cooling fan completely stops spinning.",
-            "B. Adhering to a scheduled routine of physical inspections, dust removal, and component checks.",
-            "C. Disabling automatic thermal shutdown protections inside the system BIOS.",
-            "D. Performing internal repairs while components remain connected to live main power."
+          "Traditional Rule-Based Programming",
+          "Unsupervised Deep Neural Learning",
+          "Reinforcement Learning Framework",
+          "Generative AI Modeling"
         ],
-        answer: 1,
-        explanation: "Adhering to planned physical inspection and cleaning schedules keeps hardware operating within safe parameters and prevents unexpected downtime."
-    },
-    {
-        q: "43. An AI navigation app processes live traffic data, accident reports, and distances to recommend the fastest driving route. What cognitive capability is being applied?",
+        correct: 0,
+        explanation: "Banking transactions follow strict, clear, non-negotiable rules, making traditional conditional programming the right choice."
+      },
+      {
+        question: "Why is machine learning preferred over traditional hardcoded logic when developing an enterprise spam filter?",
         options: [
-            "A. Neural Machine Translation",
-            "B. Reasoning and Problem-Solving",
-            "C. Character Optical Recognition",
-            "D. Voice Speech Synthesis"
+          "Hardcoding rules is simple, but machine learning requires less storage space.",
+          "Spam messages change constantly, making manual IF-THEN rules impractical compared to statistical pattern learning.",
+          "Calculators handle spam detection better than machine learning.",
+          "Traditional programming cannot evaluate text strings or characters."
         ],
-        answer: 1,
-        explanation: "Route optimization uses graph traversal, search algorithms, and constraint reasoning to evaluate variables and select the best path."
-    },
-    {
-        q: "44. What primary advantage does Deep Learning offer over traditional machine learning when processing unstructured raw image data?",
+        correct: 1,
+        explanation: "Spam constantly evolves. Machine learning discovers hidden patterns in massive data sets that human rule-writers would miss."
+      },
+      {
+        question: "Which problem scenario below is BEST handled using traditional rule-based software instead of an AI approach?",
         options: [
-            "A. It relies on explicit IF-THEN statements engineered by hand.",
-            "B. Its multi-layered artificial neural networks automatically learn complex features directly from raw data.",
-            "C. It executes calculations without requiring computer hardware.",
-            "D. It converts visual image files into simple tabular spreadsheets."
+          "Identifying distinct facial traits across crowded security photos.",
+          "Predicting long-term quarterly consumer buying behavior.",
+          "Calculating precise tax deductions and gross employee payroll using standard statutory rules.",
+          "Parsing user sentiment across thousands of unstructured product reviews."
         ],
-        answer: 1,
-        explanation: "Deep Learning cuts out manual feature engineering by learning hierarchical spatial representations directly from raw pixel arrays."
-    },
-    {
-        q: "45. A student argues, 'AI systems are just fast standard calculators.' Why is this perspective inaccurate?",
+        correct: 2,
+        explanation: "Payroll calculation depends on strict legal math and zero ambiguity—a perfect fit for traditional hardcoded software logic."
+      },
+      {
+        question: "Why is it impractical for a software team to write manual IF-THEN code to handle computer vision facial recognition across millions of users?",
         options: [
-            "A. Standard calculators learn from past mistakes, while AI systems cannot.",
-            "B. AI can detect complex patterns, adapt from new data, and navigate ambiguous decisions beyond rigid math.",
-            "C. AI processing speeds are drastically slower than basic arithmetic calculators.",
-            "D. Standard calculators rely on deep neural networks, whereas AI uses simple arithmetic."
+          "Facial geometry contains infinite natural pixel variations that cannot be manually written as static conditional statements.",
+          "Traditional programs lack the technical capacity to process numerical values.",
+          "AI models are strictly forbidden from analyzing visual files.",
+          "Computer processors cannot store image data inside storage drives."
         ],
-        answer: 1,
-        explanation: "Unlike basic calculators that follow fixed, explicit arithmetic rules, AI models extract patterns from unstructured data and adapt to new scenarios."
-    },
-    {
-        q: "46. A user enters a prompt into a text-based AI assistant and receives an original, contextually relevant written response. Which primary capability is at work?",
+        correct: 0,
+        explanation: "Human facial imagery features boundless variations in lighting, pose, and features that cannot be captured via static, hand-written rules."
+      },
+      {
+        question: "A university wants to automatically analyze thousands of course feedback forms into positive, negative, or neutral categories. Why choose Machine Learning?",
         options: [
-            "A. Natural Language Generation (NLG)",
-            "B. Biometric Identification",
-            "C. Physical Hardware Control",
-            "D. Spatial Computer Vision"
+          "Because human language syntax is completely frozen and never evolves.",
+          "Because an ML model learns semantic structures automatically from labeled examples without needing every text variation hardcoded.",
+          "Because standard calculators process natural text faster than AI algorithms.",
+          "Because traditional IF-THEN scripts handle complex nuance and sarcasm easily."
         ],
-        answer: 0,
-        explanation: "Natural Language Generation (NLG) enables models to formulate coherent, contextually appropriate text responses from processed inputs."
-    },
-    {
-        q: "47. Which set of tasks constitutes computer hardware maintenance?",
+        correct: 1,
+        explanation: "NLP machine learning models evaluate textual sentiment contextual trends far better than rigid keyword checks."
+      },
+      {
+        question: "A financial app calculates interest rates using fixed hardcoded rules, but uses machine learning to flag unusual account spending. Why combine both techniques?",
         options: [
-            "A. Writing software application code.",
-            "B. Conducting regular cleaning, hardware checks, thermal management, and part replacements.",
-            "C. Browsing online search engines for research.",
-            "D. Formatting text documents inside a word processor."
+          "Both tasks share identical operational requirements.",
+          "Interest calculations rely on strict fixed logic, whereas detecting spending anomalies relies on pattern recognition and probabilistic estimation.",
+          "Machine learning models are strictly incapable of handling numeric spreadsheets.",
+          "Traditional code cannot execute arithmetic operations."
         ],
-        answer: 1,
-        explanation: "Hardware maintenance encompasses the physical care, cleaning, monitoring, and part servicing needed to preserve computer hardware."
-    },
-    {
-        q: "48. A bank wants to build an ATM validation system that checks account balances, daily withdrawal limits, and PIN entries before dispensing cash. Which design model is most appropriate?",
+        correct: 1,
+        explanation: "Hybrid systems use traditional logic for strict deterministic rules (math) and ML for complex pattern analysis (fraud detection)."
+      },
+      {
+        question: "What is the foundational philosophy behind Good Old-Fashioned AI (GOFAI)?",
         options: [
-            "A. Traditional Deterministic Rule-Based Programming",
-            "B. Unsupervised Neural Clustering",
-            "C. Generative Deep Learning",
-            "D. Reinforcement Learning"
+          "Relying entirely on multi-layer deep artificial neural networks.",
+          "Building intelligence using explicit knowledge representation and formal symbolic logic rules.",
+          "Avoiding all internal logic structures, rules, and symbolic tokens.",
+          "Restricting AI exclusively to processing physical images and video streams."
         ],
-        answer: 0,
-        explanation: "Transaction validations rely on strict, non-negotiable Boolean conditions best executed via traditional deterministic software."
-    },
-    {
-        q: "49. An enterprise diagnostic tool uses explicit decision trees designed directly by veteran domain engineers to guide system troubleshooting. What model does this reflect?",
+        correct: 1,
+        explanation: "GOFAI (Symbolic AI) operates on the premise that human thought can be modeled through explicit rules and logic symbols."
+      },
+      {
+        question: "An expert system evaluates patient symptoms by matching them against a comprehensive library of medical decision trees written by doctors. Which paradigm is this?",
         options: [
-            "A. Symbolic and Rule-Based AI Systems",
-            "B. Deep Convolutional Neural Networks",
-            "C. Unsupervised Data Clustering",
-            "D. Generative Adversarial Networks"
+          "Symbolic and Rule-Based AI",
+          "Deep Convolutional Learning",
+          "Clustering and Unsupervised ML",
+          "Generative Neural Modeling"
         ],
-        answer: 0,
-        explanation: "Encoding expert domain knowledge into clear logical decision trees is the defining structure of Symbolic AI and Expert Systems."
-    },
-    {
-        q: "50. An educator uses an AI tool to draft lesson outline ideas, then reviews, corrects, and adapts the content before presenting it to students. What workflow does this demonstrate?",
+        correct: 0,
+        explanation: "Rule-based expert systems capture specialist knowledge directly into structured logical trees (Symbolic AI)."
+      },
+      {
+        question: "Which option highlights the key difference between Declarative and Imperative programming?",
         options: [
-            "A. AI should completely replace teaching professionals.",
-            "B. Human-in-the-loop workflows where AI speeds up content creation while human oversight ensures quality.",
-            "C. Educators should avoid using digital tools in lesson planning.",
-            "D. AI-generated educational content is naturally free of errors."
+          "Declarative defines the target outcome ('what'), whereas Imperative details the exact step-by-step procedure ('how').",
+          "Declarative code cannot run on modern computer hardware.",
+          "Imperative development requires deep neural network training.",
+          "Declarative and Imperative paradigms share identical instruction structures."
         ],
-        answer: 1,
-        explanation: "Human-in-the-loop workflows pair the speed of generative AI with the critical evaluation and domain expertise of human professionals."
-    },
-    {
-        q: "51. A student aims for a career building predictive algorithms, engineering data pipelines, and training machine learning models. Which job title fits best?",
+        correct: 0,
+        explanation: "Imperative programming focuses on explicit step-by-step execution; Declarative focuses on describing the desired result."
+      },
+      {
+        question: "A developer builds a script where every precise step, loop, and variable state change is explicitly laid out to finish a task. What approach is this?",
         options: [
-            "A. Data Scientist / Machine Learning Engineer",
-            "B. Basic Data Entry Clerk",
-            "C. Physical Archival Technician",
-            "D. Desktop Publishing Assistant"
+          "Declarative Programming",
+          "Imperative Programming",
+          "Probabilistic Modeling",
+          "Generative Neural Architecture"
         ],
-        answer: 0,
-        explanation: "Data Scientists and Machine Learning Engineers design mathematical models, curate data, and train predictive algorithms."
-    },
-    {
-        q: "52. A business uses hardcoded rules for payroll tax processing and machine learning for sales forecasting. Why is this dual framework practical?",
+        correct: 1,
+        explanation: "Imperative programming explicitly dictates the step-by-step control flow that the CPU must follow."
+      },
+      {
+        question: "When an engineer designs a weather forecasting system that models outcomes under uncertain atmospheric conditions using likelihood distributions, they use:",
         options: [
-            "A. Payroll tax laws are fixed and clear, whereas sales forecasting involves complex, changing patterns.",
-            "B. Tax processing and sales forecasting rely on identical mathematical formulas.",
-            "C. Machine learning models cannot process numerical values.",
-            "D. Traditional programming cannot handle business operations."
+          "Probabilistic Programming",
+          "Fixed Electronic Calculator Logic",
+          "Strict Imperative Scripting",
+          "Deterministic Hardcoded Rules"
         ],
-        answer: 0,
-        explanation: "Fixed statutory logic (taxes) calls for traditional deterministic code; variable pattern prediction (forecasting) calls for machine learning."
-    },
-    {
-        q: "53. A school district wants to build an AI-driven personalized learning tool. Which team structure offers the best chance of success?",
+        correct: 0,
+        explanation: "Probabilistic programming is designed to solve problems containing inherent randomness, statistical noise, and uncertainty."
+      },
+      {
+        question: "A fraud detection system is trained on millions of credit card charges explicitly labeled as 'Legitimate' or 'Fraudulent'. What ML paradigm is this?",
         options: [
-            "A. A lone software developer working without domain feedback.",
-            "B. A cross-functional team combining educators, curriculum specialists, and AI/data engineers.",
-            "C. A graphic designer working independently.",
-            "D. A single financial auditor."
+          "Supervised Learning",
+          "Unsupervised Learning",
+          "Reinforcement Learning",
+          "Declarative Rule Engine"
         ],
-        answer: 1,
-        explanation: "Deploying effective applied AI requires interdisciplinary collaboration between domain experts (educators) and technical developers (data engineers)."
-    },
-    {
-        q: "54. Which scenario demonstrates an AI-powered recommendation system in action?",
+        correct: 0,
+        explanation: "Supervised learning relies on paired input data and explicit, human-provided target labels during training."
+      },
+      {
+        question: "A retail system categorizes site visitors into distinct demographic clusters based on browsing habits without being given pre-made labels. What approach is used?",
         options: [
-            "A. A standard desk clock showing the current time.",
-            "B. A basic calculator determining `12 * 12`.",
-            "C. A video app suggesting relevant clips based on your watch history.",
-            "D. A timer triggering an alarm at a set hour."
+          "Supervised Classification",
+          "Unsupervised Learning",
+          "Reinforcement Learning",
+          "Traditional IF-THEN Scripting"
         ],
-        answer: 2,
-        explanation: "Personalizing content feeds based on an individual's historical usage logs is a classic application of recommendation algorithms."
-    },
-    {
-        q: "55. What AI feature enables a smartphone to unlock its home screen by inspecting the user's face?",
+        correct: 1,
+        explanation: "Unsupervised learning discovers hidden internal groupings or clusters within unlabeled data sets independently."
+      },
+      {
+        question: "An autonomous warehouse robot learns optimal navigation paths by earning positive score points for successful deliveries and penalties for collisions. This demonstrates:",
         options: [
-            "A. Facial Recognition Biometrics",
-            "B. Neural Language Translation",
-            "C. Synthesized Speech Generation",
-            "D. Text Sentiment Analysis"
+          "Supervised Learning",
+          "Unsupervised Learning",
+          "Reinforcement Learning",
+          "Symbolic Rule Engineering"
         ],
-        answer: 0,
-        explanation: "Facial recognition extracts facial feature ratios and matches them against stored biometric representations to verify user identity."
-    },
-    {
-        q: "56. An automated filter flags incoming spam by detecting subtle word patterns across thousands of sample emails labeled 'spam' or 'ham'. What core capability is being used?",
+        correct: 2,
+        explanation: "Reinforcement learning trains models using software agents that optimize actions via trial, error, rewards, and penalties."
+      },
+      {
+        question: "Which statement offers the most accurate characterization of Deep Learning?",
         options: [
-            "A. Statistical Pattern Recognition",
-            "B. Machine Translation",
-            "C. Spatial Computer Vision",
-            "D. Autonomous Kinematic Navigation"
+          "A specialized subset of Machine Learning that utilizes multi-layered artificial neural networks.",
+          "A basic electronic hardware accessory designed for numerical computation.",
+          "An outdated web development programming language.",
+          "A manual database management framework for file backup."
         ],
-        answer: 0,
-        explanation: "Pattern recognition allows machine learning classifiers to spot recurring statistical signals associated with specific target classes."
-    },
-    {
-        q: "57. An online learning portal tracks a student's practice quiz scores and adjusts question difficulty in real time. What system property is this?",
+        correct: 0,
+        explanation: "Deep Learning uses artificial neural network architectures with many deep layers to model complex data representations."
+      },
+      {
+        question: "Which field of AI equips computers to process, interpret, and visually understand digital imagery and live video streams?",
         options: [
-            "A. Fixed Execution Flow",
-            "B. Continuous Adaptation and Personalization",
-            "C. Static Rule Lookup",
-            "D. Hardware Preventive Maintenance"
+          "Natural Language Processing",
+          "Computer Vision",
+          "Automated Translation",
+          "Probabilistic Logic Engine"
         ],
-        answer: 1,
-        explanation: "Adjusting instructional pathways based on incoming user performance metrics demonstrates algorithmic learning and adaptation."
-    },
-    {
-        q: "58. System A refines its predictions as fresh data streams arrive, whereas System B outputs identical results regardless of new information. What can be inferred?",
+        correct: 1,
+        explanation: "Computer Vision algorithms enable machines to analyze visual information from optical inputs like photos and video feeds."
+      },
+      {
+        question: "A traffic camera scans live video and draws labeled bounding boxes around vehicles, pedestrians, and cyclists. What specific task is occurring?",
         options: [
-            "A. Both systems adapt at identical rates.",
-            "B. System A demonstrates adaptive capabilities better than System B.",
-            "C. System B is fundamentally more advanced than System A.",
-            "D. Neither system relies on software instructions."
+          "Object Detection & Classification",
+          "Natural Language Parsing",
+          "Acoustic Speech Synthesis",
+          "Unsupervised Customer Segmentation"
         ],
-        answer: 1,
-        explanation: "Adaptability means a system can dynamically update its parameters or behavior in response to fresh operational data."
-    },
-    {
-        q: "59. Which resource is fundamentally required to train modern machine learning models?",
+        correct: 0,
+        explanation: "Object detection identifies individual entities within visual frames, categorizes them, and pinpoints their locations."
+      },
+      {
+        question: "An app scans a photo of a printed textbook page and extracts the embedded text into an editable digital document. What technology is at work?",
         options: [
-            "A. Representative Data",
-            "B. Web search engines",
-            "C. Paper-based ledger books",
-            "D. Static plain text files"
+          "Object Tracking",
+          "Optical Character Recognition (OCR)",
+          "Reinforcement Learning Agent",
+          "Sentiment Analysis Engine"
         ],
-        answer: 0,
-        explanation: "Data is the foundational fuel used by machine learning algorithms to learn weights, parameters, and predictive relationships."
-    },
-    {
-        q: "60. Why are GPUs preferred over standard CPUs when training complex Deep Learning models?",
+        correct: 1,
+        explanation: "OCR technology analyzes visual text glyphs in images and converts them into machine-readable digital characters."
+      },
+      {
+        question: "A brand management team runs customer tweets through a system to automatically grade public reaction as positive, hostile, or neutral. What field is used?",
         options: [
-            "A. GPUs consume zero electrical power during high-load processing.",
-            "B. GPUs feature thousands of smaller cores built for parallel matrix calculations.",
-            "C. GPUs run without needing underlying software algorithms.",
-            "D. GPUs eliminate the need for training datasets."
+          "Sentiment Analysis (NLP)",
+          "Visual Object Recognition",
+          "Biometric Facial Mapping",
+          "3D Pixel Rendering"
         ],
-        answer: 1,
-        explanation: "Deep learning models rely heavily on linear algebra and matrix operations, which match the parallel architecture of GPUs."
-    },
-    {
-        q: "61. What is the primary purpose of applying thermal paste between a CPU integrated heat spreader and a heatsink cold plate?",
-        options: [
-            "A. To permanently glue the processor into its motherboard socket.",
-            "B. To fill microscopic air gaps and facilitate efficient heat transfer.",
-            "C. To isolate the processor package from excessive electrical current.",
-            "D. To absorb moisture and prevent dust build-up near the CPU pins."
-        ],
-        answer: 1,
-        explanation: "Thermal interface material fills microscopic surface imperfections between metal plates to eliminate air pockets, which act as thermal insulators."
-    },
-    {
-        q: "62. When using compressed air to clear dust out of cooling fans, why should a technician physically hold the fan blades stationary?",
-        options: [
-            "A. To stop the fan from spinning too fast, which can damage its bearings or send reverse current into the motherboard.",
-            "B. To make sure compressed air forces the fan blades to spin in reverse.",
-            "C. To prevent compressed air from evaporating thermal paste under the heatsink.",
-            "D. To keep the computer powered on while cleaning."
-        ],
-        answer: 0,
-        explanation: "Free-spinning a fan with compressed air can exceed its rated RPM, ruining the bearings or generating back-EMF voltage that harms electrical circuits."
-    },
-    {
-        q: "63. Which component provides fast, temporary volatile storage for active processes while the computer is running?",
-        options: [
-            "A. Hard Disk Drive (HDD)",
-            "B. Random Access Memory (RAM)",
-            "C. Read-Only Memory (ROM)",
-            "D. Solid State Drive (SSD)"
-        ],
-        answer: 1,
-        explanation: "RAM serves as temporary, volatile system memory holding active OS routines and running application data for rapid CPU access."
-    },
-    {
-        q: "64. A PC abruptly shuts down while running high-load software, and monitoring logs show CPU temperatures reaching maximum limits right before the crash. What safety system was triggered?",
-        options: [
-            "A. Corrective Driver Recovery",
-            "B. Thermal Throttling / Automatic Thermal Shutdown",
-            "C. Unsupervised Reset Protocol",
-            "D. Power Supply Overcharge Protection"
-        ],
-        answer: 1,
-        explanation: "Modern processors include built-in thermal safety mechanisms that throttle clock speeds or shut down power to prevent permanent heat damage."
-    },
-    {
-        q: "65. What safety equipment should a technician use to guard delicate microelectronics against static electricity when handling system components?",
-        options: [
-            "A. Insulating heavy rubber boots",
-            "B. An anti-static wrist strap clipped to a grounded metal frame",
-            "C. Heat-resistant padded gloves",
-            "D. Protective anti-glare eyewear"
-        ],
-        answer: 1,
-        explanation: "An anti-static wrist strap grounds the technician, safely draining static charge before it can discharge into and damage sensitive microconductors."
-    },
-    {
-        q: "66. Installing OS security patches, updating device drivers, and clearing temp files are all examples of:",
-        options: [
-            "A. Physical Hardware Overhauls",
-            "B. Software / Logical Preventative Maintenance",
-            "C. Reactive Corrective Repairs",
-            "D. Emergency Hardware Part Replacements"
-        ],
-        answer: 1,
-        explanation: "Logical preventative maintenance includes software upkeep routines that keep system environments stable, secure, and running smoothly."
-    },
-    {
-        q: "67. What is the primary operational role of an Uninterruptible Power Supply (UPS) in a server room?",
-        options: [
-            "A. Replacing grid electrical utility power permanently.",
-            "B. Providing emergency battery power during blackouts and protecting equipment from voltage spikes.",
-            "C. Lowering the ambient thermal temperature inside server racks.",
-            "D. Automatically backing up local database records to cloud servers."
-        ],
-        answer: 1,
-        explanation: "A UPS supplies immediate backup battery power during outages and conditions power lines to shield hardware from dangerous voltage spikes."
-    },
-    {
-        q: "68. A computer fails to boot, displays nothing on screen, and emits a sequence of audible beeps from the motherboard. What is the primary purpose of these beep codes?",
-        options: [
-            "A. Confirming that the operating system loaded successfully.",
-            "B. Signatures indicating early hardware initialization faults before display drivers load.",
-            "C. Alerting users to high network traffic bottlenecks.",
-            "D. Testing internal motherboard speakers at high audio frequencies."
-        ],
-        answer: 1,
-        explanation: "Power-On Self-Test (POST) diagnostic beep codes alert technicians to early low-level hardware failures (like RAM or GPU errors) before video initializes."
-    },
-    {
-        q: "69. What maintenance task consolidates non-contiguous file segments on mechanical Hard Disk Drives (HDDs) to improve file read performance?",
-        options: [
-            "A. Optical Media Alignment",
-            "B. Disk Defragmentation",
-            "C. Firmware Flashing",
-            "D. Thermal Re-pasting"
-        ],
-        answer: 1,
-        explanation: "Defragmentation reorganizes scattered data blocks on magnetic hard drives into sequential physical sectors, reducing read-head seek time."
-    },
-    {
-        q: "70. What is a key structural distinction between Solid State Drives (SSDs) and traditional Hard Disk Drives (HDDs)?",
-        options: [
-            "A. HDDs use solid flash chips, whereas SSDs rely on magnetic platters.",
-            "B. SSDs have no moving mechanical parts, making them faster and more shock-resistant than HDDs.",
-            "C. SSDs require active liquid cooling lines inside desktop cases.",
-            "D. HDDs transfer data without needing power cables."
-        ],
-        answer: 1,
-        explanation: "SSDs store data using non-volatile flash memory chips without moving parts, offering much faster access times and physical durability over mechanical HDDs."
-    },
-    {
-        q: "71. In Machine Learning, what issue arises when a model is trained for too long on a limited dataset, memorizing noise instead of general patterns?",
-        options: [
-            "A. Overfitting",
-            "B. Underfitting",
-            "C. Thermal Throttling",
-            "D. Imperative Recursion"
-        ],
-        answer: 0,
-        explanation: "Overfitting happens when a model fits its training set too closely, memorizing random noise and failing to generalize to new test data."
-    },
-    {
-        q: "72. An AI diagnostic model scores high accuracy on its original training dataset but performs poorly when tested on real patient data from a new clinic. What issue does this highlight?",
-        options: [
-            "A. Insufficient GPU processing speed",
-            "B. Poor Generalization Capability",
-            "C. Hardware Bus Failure",
-            "D. Declarative Code Instability"
-        ],
-        answer: 1,
-        explanation: "When a model performs well on training data but fails on real-world inputs, it lacks generalizability."
-    },
-    {
-        q: "73. What is the main function of an 'activation function' within an artificial neural network node?",
-        options: [
-            "A. Regulating the electrical voltage supplied to GPU chips.",
-            "B. Introducing non-linearity so the network can learn complex patterns.",
-            "C. Reformatting raw text output into structured PDF reports.",
-            "D. Converting speech audio directly into physical fan speed adjustments."
-        ],
-        answer: 1,
-        explanation: "Activation functions introduce non-linear transformations, enabling multi-layer neural networks to learn non-linear patterns."
-    },
-    {
-        q: "74. In an autonomous vehicle, what technique combines inputs from LiDAR, radar, and visual cameras into a single environmental model?",
-        options: [
-            "A. Optical Character Parsing",
-            "B. Sensor Fusion",
-            "C. Declarative Parsing",
-            "D. Disk Defragmentation"
-        ],
-        answer: 1,
-        explanation: "Sensor fusion combines data streams from multiple sensors (LiDAR, radar, cameras) to build a clear, accurate picture of the vehicle's surroundings."
-    },
-    {
-        q: "75. What is the fundamental function of Large Language Models (LLMs) in Natural Language Processing?",
-        options: [
-            "A. Predicting the next word or token in a sequence based on probability patterns.",
-            "B. Translating video keyframes directly into physical hardware commands.",
-            "C. Executing step-by-step imperative calculations for payroll systems.",
-            "D. Regulating physical fan speeds in cloud data centers."
-        ],
-        answer: 0,
-        explanation: "LLMs operate as probabilistic prediction engines that generate text by estimating the most likely next token given the prompt context."
-    },
-    {
-        q: "76. What term describes human-annotated data used to train supervised machine learning models?",
-        options: [
-            "A. Unstructured Noise",
-            "B. Labeled Dataset / Ground Truth Data",
-            "C. Hardware Log Stream",
-            "D. Defragmented File Map"
-        ],
-        answer: 1,
-        explanation: "Supervised models require ground-truth labeled datasets containing paired inputs and verified correct target outputs."
-    },
-    {
-        q: "77. Why is 'Explainable AI' (XAI) becoming increasingly important in fields like healthcare, lending, and law?",
-        options: [
-            "A. To run AI models without needing physical processing hardware.",
-            "B. To make 'black box' model decisions transparent and understandable to human evaluators.",
-            "C. To ensure machine learning models never require data updates.",
-            "D. To convert imperative software programs into machine assembly code."
-        ],
-        answer: 1,
-        explanation: "Explainable AI (XAI) aims to clarify how complex models arrive at predictions so human experts can audit and trust automated outputs."
-    },
-    {
-        q: "78. An AI developer uses positive feedback points to train a virtual character to complete a maze by trial and error. What is the agent's objective?",
-        options: [
-            "A. To minimize hard drive storage usage during execution.",
-            "B. To maximize its cumulative reward score over time.",
-            "C. To convert visual pixels into text strings.",
-            "D. To execute a hardcoded path step for every movement."
-        ],
-        answer: 1,
-        explanation: "In reinforcement learning, agents act to maximize their cumulative scalar reward signal over time within an environment."
-    },
-    {
-        q: "79. What concept describes an AI model leveraging knowledge gained from solving one task to jumpstart learning on a related task?",
-        options: [
-            "A. Transfer Learning",
-            "B. Corrective Maintenance",
-            "C. Hardware Virtualization",
-            "D. Imperative Compilation"
-        ],
-        answer: 0,
-        explanation: "Transfer Learning takes feature representations learned from one trained model and applies them to accelerate training on a new target task."
-    },
-    {
-        q: "80. Which scenario represents an ethical concern in AI deployment?",
-        options: [
-            "A. An algorithm processing matrix calculations faster on a GPU than a CPU.",
-            "B. Historical bias in training data leading to unfair discrimination in an automated hiring tool.",
-            "C. Using compressed air to clean server dust filters.",
-            "D. Scheduling routine disk defragmentation during off-peak office hours."
-        ],
-        answer: 1,
-        explanation: "Algorithmic bias occurs when models pick up and amplify historical prejudices present in training data, producing discriminatory results."
+        correct: 0,
+        explanation: "Sentiment analysis uses NLP techniques to extract subjective tone, emotional state, and opinion polarities from text."
+      }
+    ];
+
+    // UTILITY: Fisher-Yates Array Shuffle Engine
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
     }
-];
 
-let userScore = 0;
-const answeredQuestions = new Set();
+    // Prepare dynamic shuffled quiz dataset
+    let quizData = shuffleArray([...rawQuestions]).map((item, index) => {
+      // Shuffle options while tracking the correct answer index
+      const originalCorrectOption = item.options[item.correct];
+      const shuffledOptions = shuffleArray([...item.options]);
+      const newCorrectIndex = shuffledOptions.indexOf(originalCorrectOption);
 
-function renderQuiz() {
-    const container = document.getElementById('quiz-container');
-    container.innerHTML = '';
+      return {
+        id: index + 1,
+        question: item.question,
+        options: shuffledOptions,
+        correct: newCorrectIndex,
+        explanation: item.explanation
+      };
+    });
 
-    quizData.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'question-card';
+    let currentIndex = 0;
+    let selectedOption = null;
+    let score = 0;
+    let answeredCount = 0;
 
-        const questionTitle = document.createElement('div');
-        questionTitle.className = 'question-text';
-        questionTitle.innerText = item.q;
-        card.appendChild(questionTitle);
+    // DOM Elements
+    const quizCard = document.getElementById('quiz-card');
+    const questionText = document.getElementById('question-text');
+    const optionsGrid = document.getElementById('options-grid');
+    const questionBadge = document.getElementById('question-badge');
+    const submitBtn = document.getElementById('submit-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const feedbackBox = document.getElementById('feedback-box');
+    const progressText = document.getElementById('progress-text');
+    const scoreText = document.getElementById('score-text');
+    const accuracyText = document.getElementById('accuracy-text');
+    const progressBar = document.getElementById('progress-bar');
+    const resultsCard = document.getElementById('results-card');
 
-        const optionsContainer = document.createElement('div');
-        optionsContainer.className = 'options-container';
+    function loadQuestion() {
+      const q = quizData[currentIndex];
+      selectedOption = null;
 
-        item.options.forEach((opt, optIndex) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => selectAnswer(index, optIndex, card);
-            optionsContainer.appendChild(btn);
+      quizCard.classList.remove('slide-out');
+      quizCard.classList.add('slide-in');
+
+      questionBadge.innerHTML = `<i class="fa-solid fa-layer-group"></i> Question ${q.id} of ${quizData.length}`;
+      questionText.innerHTML = q.question;
+
+      optionsGrid.innerHTML = '';
+      feedbackBox.style.display = 'none';
+      submitBtn.style.display = 'inline-flex';
+      submitBtn.disabled = true;
+      nextBtn.style.display = 'none';
+
+      const letters = ['A', 'B', 'C', 'D'];
+
+      q.options.forEach((optText, idx) => {
+        const optionBtn = document.createElement('div');
+        optionBtn.className = 'option-btn';
+        optionBtn.innerHTML = `
+          <span class="option-letter">${letters[idx]}</span>
+          <span style="flex-grow:1; line-height:1.4;">${optText}</span>
+        `;
+        optionBtn.onclick = () => selectOption(idx, optionBtn);
+        optionsGrid.appendChild(optionBtn);
+      });
+
+      updateStatsUI();
+    }
+
+    function selectOption(index, element) {
+      if (submitBtn.style.display === 'none') return;
+      
+      selectedOption = index;
+      const allOptions = optionsGrid.querySelectorAll('.option-btn');
+      allOptions.forEach(opt => opt.classList.remove('selected'));
+      element.classList.add('selected');
+      
+      submitBtn.disabled = false;
+    }
+
+    function checkAnswer() {
+      if (selectedOption === null) return;
+
+      const q = quizData[currentIndex];
+      const options = optionsGrid.querySelectorAll('.option-btn');
+
+      options.forEach(opt => opt.classList.add('disabled'));
+      answeredCount++;
+
+      if (selectedOption === q.correct) {
+        score++;
+        options[selectedOption].classList.add('correct-reveal');
+        feedbackBox.className = 'feedback-box correct';
+        feedbackBox.innerHTML = `<strong><i class="fa-solid fa-circle-check"></i> Correct Choice!</strong><br>💡 <strong>Pedagogical Rationale:</strong> ${q.explanation}`;
+        
+        confetti({
+          particleCount: 40,
+          spread: 60,
+          origin: { y: 0.8 }
         });
+      } else {
+        options[selectedOption].classList.add('incorrect-reveal');
+        options[q.correct].classList.add('correct-reveal');
+        feedbackBox.className = 'feedback-box incorrect';
+        feedbackBox.innerHTML = `<strong><i class="fa-solid fa-circle-xmark"></i> Incorrect Selection.</strong><br>💡 <strong>Pedagogical Rationale:</strong> ${q.explanation}`;
+      }
 
-        card.appendChild(optionsContainer);
+      feedbackBox.style.display = 'block';
+      submitBtn.style.display = 'none';
+      nextBtn.style.display = 'inline-flex';
 
-        const feedback = document.createElement('div');
-        feedback.id = `feedback-${index}`;
-        feedback.className = 'feedback-box';
-        card.appendChild(feedback);
-
-        container.appendChild(card);
-    });
-}
-
-function selectAnswer(questionIndex, selectedOptionIndex, cardElement) {
-    if (answeredQuestions.has(questionIndex)) return;
-
-    answeredQuestions.add(questionIndex);
-    const data = quizData[questionIndex];
-    const buttons = cardElement.querySelectorAll('.option-btn');
-    const feedback = cardElement.querySelector('.feedback-box');
-
-    buttons.forEach((btn, idx) => {
-        btn.disabled = true;
-        if (idx === data.answer) {
-            btn.classList.add('correct');
-        } else if (idx === selectedOptionIndex) {
-            btn.classList.add('incorrect');
-        }
-    });
-
-    if (selectedOptionIndex === data.answer) {
-        userScore++;
-        document.getElementById('score').innerText = userScore;
-        feedback.className = 'feedback-box show correct';
-        feedback.innerHTML = `<strong>Correct!</strong><br>${data.explanation}`;
-    } else {
-        feedback.className = 'feedback-box show incorrect';
-        feedback.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <em>${data.options[data.answer]}</em>.<br>${data.explanation}`;
+      updateStatsUI();
     }
-}
 
-window.onload = renderQuiz;
-</script>
+    function nextQuestion() {
+      quizCard.classList.remove('slide-in');
+      quizCard.classList.add('slide-out');
 
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex < quizData.length) {
+          loadQuestion();
+        } else {
+          showResults();
+        }
+      }, 250);
+    }
+
+    function updateStatsUI() {
+      progressText.textContent = `${currentIndex + 1} / ${quizData.length}`;
+      scoreText.textContent = score;
+      const accuracy = answeredCount > 0 ? Math.round((score / answeredCount) * 100) : 0;
+      accuracyText.textContent = `${accuracy}%`;
+
+      const progressPercent = ((currentIndex + 1) / quizData.length) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+    }
+
+    function showResults() {
+      quizCard.style.display = 'none';
+      resultsCard.style.display = 'block';
+
+      document.getElementById('final-score').textContent = `${score} / ${quizData.length}`;
+
+      const pct = (score / quizData.length) * 100;
+      let msg = "";
+      if (pct === 100) msg = "🌟 Exceptional Performance! You demonstrated complete mastery across all ICT and AI domains.";
+      else if (pct >= 80) msg = "🎉 Great Work! You have a strong, robust understanding of hardware maintenance and AI systems.";
+      else if (pct >= 60) msg = "👍 Good Effort! Review the rationale cards to solidify your understanding of tricky concepts.";
+      else msg = "📚 Keep Reviewing! Brush up on core AI paradigms and hardware strategies, then try again.";
+
+      document.getElementById('final-message').textContent = msg;
+
+      if (pct >= 70) {
+        confetti({
+          particleCount: 120,
+          spread: 90,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    function restartQuiz() {
+      // Reshuffle questions and choices on restart
+      quizData = shuffleArray([...rawQuestions]).map((item, index) => {
+        const originalCorrectOption = item.options[item.correct];
+        const shuffledOptions = shuffleArray([...item.options]);
+        const newCorrectIndex = shuffledOptions.indexOf(originalCorrectOption);
+
+        return {
+          id: index + 1,
+          question: item.question,
+          options: shuffledOptions,
+          correct: newCorrectIndex,
+          explanation: item.explanation
+        };
+      });
+
+      currentIndex = 0;
+      score = 0;
+      answeredCount = 0;
+      resultsCard.style.display = 'none';
+      quizCard.style.display = 'block';
+      loadQuestion();
+    }
+
+    window.onload = loadQuestion;
+  </script>
 </body>
 </html>
